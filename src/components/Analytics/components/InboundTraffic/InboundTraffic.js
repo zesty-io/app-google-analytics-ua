@@ -1,67 +1,65 @@
-import { PureComponent } from "react";
-
+import React, {useEffect, useState} from 'react' 
 import { Doughnut } from "react-chartjs-2";
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { request } from "../../../../utility/request";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChartPie } from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./InboundTraffic.less";
-export class InboundTraffic extends PureComponent {
-  state = {
-    data: this.props.data,
-  };
-  componentDidMount() {
-    if (this.props.domainSet) {
-      this.getInboundTraffic().then((json) => {
-        if (json && json.chartJSData) {
-          this.setState({
-            data: json.chartJSData,
-          });
-        } else if (json && json.status === 400) {
-          this.props.setGALegacyStatus(true);
-        }
-      });
-    }
-  }
-  getInboundTraffic() {
-    return request(
-      `${process.env.REACT_APP_SERVICE_GOOGLE_ANALYTICS_READ}/?zuid=${this.props.instanceZUID}`,
-      {
-        method: "POST",
-        credentials: "omit",
-        headers: {
-          "Content-Type": "plain/text",
-        },
-        body: JSON.stringify({
-          gaRequest: {
-            reportRequests: [
-              {
-                viewId: this.props.profileID,
-                dateRanges: [{ startDate: "14daysAgo", endDate: "yesterday" }],
-                metrics: [{ expression: "ga:sessions" }],
-                dimensions: [{ name: "ga:medium" }],
-                dimensionFilterClauses: [
-                  {
-                    filters: [
-                      {
-                        dimensionName: "ga:medium",
-                        not: true,
-                        expressions: ["(not set)"],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-          type: "pie",
-        }),
-      }
-    );
-  }
 
-  render() {
+export const InboundTraffic = ({ data, domainSet, setGALegacyStatus, instanceZUID, profileID}) => {
+
+    const [chartData, setChartData] = useState(data)
+
+    useEffect(() => {
+      if (domainSet) {
+        getInboundTraffic().then((json) => {
+          if (json && json.chartJSData) {
+              setChartData(json.chartJSData)
+          } else if (json && json.status === 400) {
+            setGALegacyStatus(true);
+          }
+        });
+      }
+    }, [])
+
+    const getInboundTraffic = () => {
+      return request(
+        `${process.env.REACT_APP_SERVICE_GOOGLE_ANALYTICS_READ}/?zuid=${instanceZUID}`,
+        {
+          method: "POST",
+          credentials: "omit",
+          headers: {
+            "Content-Type": "plain/text",
+          },
+          body: JSON.stringify({
+            gaRequest: {
+              reportRequests: [
+                {
+                  viewId: profileID,
+                  dateRanges: [{ startDate: "14daysAgo", endDate: "yesterday" }],
+                  metrics: [{ expression: "ga:sessions" }],
+                  dimensions: [{ name: "ga:medium" }],
+                  dimensionFilterClauses: [
+                    {
+                      filters: [
+                        {
+                          dimensionName: "ga:medium",
+                          not: true,
+                          expressions: ["(not set)"],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+            type: "pie",
+          }),
+        }
+      );
+    }
+
     return (
       <Card>
         <CardHeader>
@@ -79,7 +77,7 @@ export class InboundTraffic extends PureComponent {
         </CardHeader>
         <CardContent>
           <Doughnut
-            data={this.state.data}
+            data={chartData}
             // width={250}
             height={250}
             options={{
@@ -93,5 +91,5 @@ export class InboundTraffic extends PureComponent {
         </CardContent>
       </Card>
     );
-  }
+
 }

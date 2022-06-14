@@ -1,7 +1,6 @@
-import { PureComponent } from "react";
 import cx from "classnames";
 import moment from "moment";
-
+import { useState, useEffect } from 'react' 
 // import { ContentVelocity } from "./components/ContentVelocity";
 import { PageviewTraffic } from "./components/PageviewTraffic";
 import { InboundTraffic } from "./components/InboundTraffic";
@@ -9,65 +8,50 @@ import { SocialTraffic } from "./components/SocialTraffic";
 import { TopPerforming } from "./components/TopPerforming";
 import { RecentlyEdited } from "./components/RecentlyEdited";
 import { GoogleAuthOverlay } from "./components/GoogleAuthOverlay";
-
 import { fetchRecentItems } from "../../utility/user";
-
 import shelldata from "./shelldata";
-
 import styles from "./Analytics.less";
+import { request } from '../../utility/request'
 
-// export default connect(function (state) {
+export default function Analytics(state) {
 
-//   return {
-//     user: state.user,
-//     instanceZUID: state.instance.ZUID,
-//     instance: state.instance,
-//     instanceName: state.instance.name,
-//     contentModels: Object.keys(state.models).reduce((acc, modelZUID) => {
-//       if (
-//         state.models[modelZUID] &&
-//         state.models[modelZUID].label !== "Dashboard Widgets"
-//       ) {
-//         acc[modelZUID] = state.models[modelZUID];
-//       }
-//       return acc;
-//     }, {}),
-//   };
-// })(
-export default class Analytics extends PureComponent {
-    state = {
-      recentlyEditedItems: [],
-      favoriteModels: [],
-      loading: true,
-      webEngineOn: true, // in the future this will be a boolean pulled off the account, it will change the dash
-      gaAuthenticated: Boolean(this.props.instance.google_profile_id),
-      gaLegacyAuth: false, // we need response body from cloud function could change this
-    };
+  const [recentlyEditedItems, setRecentlyEditedItems] = useState([])
+  const [favoriteModels, setFavoriteModels] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [webEngineOn, setWebEngineOn] = useState(true)
+  const [gaAuthenticated, setGaAuthenticated] = useState(Boolean(state.instance.google_profile_id))
+  const [gaLegacyAuth, setGaLegacyAuth] = useState(false)
+  const [domainSet, setDomainSet] = useState(Boolean(
+    state.instance.domains &&
+    state.instance.domains[0] &&
+    state.instance.domains[0].domain
+  ))
 
-    componentDidMount() {
-      if (this.props.instance.google_profile_id) {
+    useEffect(()=> {
+     
+      if (state.instance.google_profile_id) {
         const start = moment().subtract(120, "days").format("YYYY-MM-DD");
-
-        this.props
-          .dispatch(fetchRecentItems(this.props.user.ZUID, start))
+        fetchRecentItems(state.user.ZUID, start)
           .then((res) => {
             if (res && res.data) {
-              this.setState({
-                recentlyEditedItems: this.getLastEditedItems(res.data),
-                favoriteModels: this.getFavoriteModels(res.data),
-                loading: false,
-              });
+              setRecentlyEditedItems(getLastEditedItems(res.data))
+              setFavoriteModels(getFavoriteModels(res.data))
+              setLoading(false)
             } else {
-              this.setState({
-                loading: false,
-              });
+              setLoading(false)
             }
           });
        }
+    }, [])
+
+    const fetchRecentItems = (ZUID, start) => {
+      return request(
+        `https://${ZUID + process.env.REACT_APP_API_INSTANCE}search/items?q=${ZUID}&order=created&dir=DESC&start_date=${start}`
+      )
     }
 
-    setGALegacyStatus = (status) => {
-      this.setState({ gaLegacyAuth: status });
+    const setGALegacyStatus = (status) => {
+      setGaLegacyAuth(status)
     };
     /**
       Group items by model
@@ -75,7 +59,7 @@ export default class Analytics extends PureComponent {
         [contentModelZUID, [item, item, ...]]
       ]
     **/
-    getFavoriteModels(items) {
+    const getFavoriteModels = (items) => {
       const grouped = items.reduce((acc, item) => {
         if (acc[item.meta.contentModelZUID]) {
           acc[item.meta.contentModelZUID].push(item);
@@ -104,7 +88,7 @@ export default class Analytics extends PureComponent {
       return sorted.slice(0, 3);
     }
 
-    getLastEditedItems(items) {
+    const getLastEditedItems = (items) => {
       return [...items]
         .sort((a, b) => {
           if (a.meta.updatedAt < b.meta.updatedAt) {
@@ -118,12 +102,6 @@ export default class Analytics extends PureComponent {
         .slice(0, 5);
     }
 
-    render() {
-      const domainSet = Boolean(
-        this.props.instance.domains &&
-          this.props.instance.domains[0] &&
-          this.props.instance.domains[0].domain
-      );
       return (
         <section className={styles.Dashboard}>
           <div className={styles.container}>
@@ -134,21 +112,21 @@ export default class Analytics extends PureComponent {
                 styles.analyticsContainer
               )}
             >
-              {(!this.state.gaAuthenticated || this.state.gaLegacyAuth) && (
+              {(!gaAuthenticated || gaLegacyAuth) && (
                 <GoogleAuthOverlay
-                  gaLegacyAuth={this.state.gaLegacyAuth}
+                  gaLegacyAuth={gaLegacyAuth}
                   domainSet={domainSet}
-                  gaAuthenticated={this.state.gaAuthenticated}
-                  user={this.props.user}
-                  instance={this.props.instance}
+                  gaAuthenticated={gaAuthenticated}
+                  user={state.user}
+                  instance={state.instance}
                 />
               )}
               {/* TODO add Google Auth Modal here */}
               <div className={cx(styles.column, styles.primary)}>
                 <PageviewTraffic
-                  setGALegacyStatus={this.setGALegacyStatus}
-                  instanceZUID={this.props.instanceZUID}
-                  profileID={this.props.instance.google_profile_id}
+                  setGALegacyStatus={setGALegacyStatus}
+                  instanceZUID={state.instance.ZUID}
+                  profileID={state.instance.google_profile_id}
                   data={shelldata.shellBarData()}
                   domainSet={domainSet}
                 />
@@ -156,16 +134,16 @@ export default class Analytics extends PureComponent {
 
               <div className={styles.column}>
                 <InboundTraffic
-                  setGALegacyStatus={this.setGALegacyStatus}
-                  instanceZUID={this.props.instanceZUID}
-                  profileID={this.props.instance.google_profile_id}
+                  setGALegacyStatus={setGALegacyStatus}
+                  instanceZUID={state.instance.ZUID}
+                  profileID={state.instance.google_profile_id}
                   data={shelldata.shellDoughnutData()}
                   domainSet={domainSet}
                 />
                 <SocialTraffic
-                  setGALegacyStatus={this.setGALegacyStatus}
-                  instanceZUID={this.props.instanceZUID}
-                  profileID={this.props.instance.google_profile_id}
+                  setGALegacyStatus={setGALegacyStatus}
+                  instanceZUID={state.instance.ZUID}
+                  profileID={state.instance.google_profile_id}
                   data={shelldata.shellDoughnutData()}
                   domainSet={domainSet}
                 />
@@ -178,20 +156,19 @@ export default class Analytics extends PureComponent {
             </div>*/}
               <div className={cx(styles.column)}>
                 <RecentlyEdited
-                  items={this.state.recentlyEditedItems}
-                  loading={this.state.loading}
+                  items={recentlyEditedItems}
+                  loading={loading}
                 />
               </div>
               <div className={cx(styles.column, styles.recent)}>
                 <TopPerforming
-                  instanceZUID={this.props.instanceZUID}
-                  profileID={this.props.instance.google_profile_id}
+                  instanceZUID={state.instance.ZUID}
+                  profileID={state.instance.google_profile_id}
                 />
               </div>
             </div>
           </div>
         </section>
       );
-    }
   }
 // );

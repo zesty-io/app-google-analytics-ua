@@ -3,10 +3,10 @@ import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChartLine } from "@fortawesome/free-solid-svg-icons";
 
-export class ContentVelocity extends Component {
-  render() {
-    return (
-      <Card>
+export const ContentVelocity = () => {
+
+  return (
+    <Card>
         <CardHeader>
           <h2>
             <FontAwesomeIcon icon={faChartLine} />
@@ -30,6 +30,6 @@ export class ContentVelocity extends Component {
           </table>
         </CardContent>
       </Card>
-    );
-  }
+  )
+
 }

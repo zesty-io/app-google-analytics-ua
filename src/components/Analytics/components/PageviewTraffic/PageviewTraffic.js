@@ -1,5 +1,5 @@
 import { PureComponent } from "react";
-
+import React, { useEffect, useState } from 'react'
 import { Line } from "react-chartjs-2";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { request } from "../../../../utility/request";
@@ -7,71 +7,75 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChartArea } from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./PageviewTraffic.css";
-export class PageviewTraffic extends PureComponent {
-  state = {
-    data: this.props.data,
-  };
-  componentDidMount() {
-    if (this.props.domainSet) {
-      this.getBarChartData().then((json) => {
-        if (json && json.chartJSData) {
-          this.setState({
-            data: json.chartJSData,
-          });
-        } else if (json && json.status === 400) {
-          this.props.setGALegacyStatus(true);
-        }
-      });
-    }
-  }
-  getBarChartData() {
-    return request(
-      `${process.env.REACT_APP_SERVICE_GOOGLE_ANALYTICS_READ}/?zuid=${this.props.instanceZUID}`,
-      {
-        method: "POST",
-        credentials: "omit",
-        headers: {
-          "Content-Type": "plain/text",
-        },
-        body: JSON.stringify({
-          gaRequest: {
-            reportRequests: [
-              {
-                viewId: this.props.profileID,
-                dateRanges: [
-                  {
-                    startDate: "14daysAgo",
-                    endDate: "today",
-                  },
-                ],
-                metrics: [
-                  { expression: "ga:sessions" },
-                  { expression: "ga:pageviews" },
-                ],
-                dimensions: [
-                  { name: "ga:date" },
-                  { name: "ga:dayOfWeekName" },
-                  { name: "ga:month" },
-                  { name: "ga:day" },
-                  { name: "ga:year" },
-                ],
-                orderBys: [
-                  {
-                    fieldName: "ga:date",
-                    orderType: "VALUE",
-                    sortOrder: "ASCENDING",
-                  },
-                ],
-              },
-            ],
-          },
-          type: "bar",
-          excludeLabelDimensions: [0],
-        }),
+
+export const PageviewTraffic = ({ setGALegacyStatus, instanceZUID, profileID, data, domainSet }) => {
+
+    const [chartData, setChartData] = useState(data)
+
+    useEffect(() => {
+      if (domainSet) {
+        getBarChartData().then((json) => {
+          if (json && json.chartJSData) {
+
+            setChartData(json.chartJSData)
+
+          } else if (json && json.status === 400) {
+
+            setGALegacyStatus(true);
+
+          }
+        });
       }
-    );
-  }
-  render() {
+    }, [])
+
+    const getBarChartData = () => {
+      return request(
+        `${process.env.REACT_APP_SERVICE_GOOGLE_ANALYTICS_READ}/?zuid=${instanceZUID}`,
+        {
+          method: "POST",
+          credentials: "omit",
+          headers: {
+            "Content-Type": "plain/text",
+          },
+          body: JSON.stringify({
+            gaRequest: {
+              reportRequests: [
+                {
+                  viewId: profileID,
+                  dateRanges: [
+                    {
+                      startDate: "14daysAgo",
+                      endDate: "today",
+                    },
+                  ],
+                  metrics: [
+                    { expression: "ga:sessions" },
+                    { expression: "ga:pageviews" },
+                  ],
+                  dimensions: [
+                    { name: "ga:date" },
+                    { name: "ga:dayOfWeekName" },
+                    { name: "ga:month" },
+                    { name: "ga:day" },
+                    { name: "ga:year" },
+                  ],
+                  orderBys: [
+                    {
+                      fieldName: "ga:date",
+                      orderType: "VALUE",
+                      sortOrder: "ASCENDING",
+                    },
+                  ],
+                },
+              ],
+            },
+            type: "bar",
+            excludeLabelDimensions: [0],
+          }),
+        }
+      );
+    }
+
     return (
       <Card>
         <CardHeader>
@@ -89,7 +93,7 @@ export class PageviewTraffic extends PureComponent {
         </CardHeader>
         <CardContent>
           <Line
-            data={this.state.data}
+            data={chartData}
             // width={500}
             height={575}
             options={{
@@ -118,5 +122,5 @@ export class PageviewTraffic extends PureComponent {
         </CardContent>
       </Card>
     );
-  }
+
 }

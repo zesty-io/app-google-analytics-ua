@@ -4,15 +4,13 @@ import Cookies from "js-cookie";
 
 export function request(url, opts = {}) {
 
- 
-
   if (!url) {
     throw new Error("A URL is required to make a request");
   }
 
   opts.headers = opts.headers || {};
   // opts.headers["Authorization"] = `Bearer ${Cookies.get(CONFIG.COOKIE_NAME)}`;
-  opts.headers["Authorization"] = `Bearer ${Cookies.get(process.env.REACT_APP_COOKIE_NAME)}`;
+  opts.headers["Authorization"] = `Bearer ${process.env.REACT_APP_TOKEN}`;
 
   if (!opts.method && opts.body) {
     opts.method = "POST";
@@ -49,9 +47,7 @@ export function request(url, opts = {}) {
 
   opts.credentials = opts.credentials || "omit";
   opts.method = opts.method || "GET";
-
-  console.log(opts)
-
+  
   return fetch(url, opts)
     .then((res) => {
       // console.log("Request:", res);

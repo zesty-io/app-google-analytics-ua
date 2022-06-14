@@ -3,15 +3,12 @@ import { Fragment } from "react";
 // import {usePermission} from "../../../../shell/hooks/use-permissions"
 
 import Button from "@mui/material/Button";
-
 import KeyIcon from "@mui/icons-material/Key";
-
 import styles from "./GoogleAuthOverlay.less";
 
-export default function GaAuthenticate(props) {
-  // const canAuthenticate = usePermission("CODE");
-  const canAuthenticate = true
-
+const GaAuthenticates = ({ onClick }) => {
+ // const canAuthenticate = usePermission("CODE");
+  const canAuthenticate = false
 
   return (
     <Fragment>
@@ -20,7 +17,7 @@ export default function GaAuthenticate(props) {
           <Button
             variant="contained"
             color="success"
-            onClick={props.onClick}
+            onClick={onClick}
             startIcon={<KeyIcon />}
           >
             Click here to Authenticate With Google
@@ -30,3 +27,5 @@ export default function GaAuthenticate(props) {
     </Fragment>
   );
 }
+
+export default GaAuthenticates

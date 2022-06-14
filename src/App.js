@@ -63,6 +63,9 @@ function App() {
 					}
 				]
 			}}
+			user={{
+			
+			}}
 		>
 			<Analytics />
 		</AppLoader>
