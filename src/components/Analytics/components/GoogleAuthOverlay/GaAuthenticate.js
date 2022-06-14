@@ -8,7 +8,7 @@ import styles from "./GoogleAuthOverlay.less";
 
 const GaAuthenticates = ({ onClick }) => {
  // const canAuthenticate = usePermission("CODE");
-  const canAuthenticate = false
+  const canAuthenticate = true
 
   return (
     <Fragment>

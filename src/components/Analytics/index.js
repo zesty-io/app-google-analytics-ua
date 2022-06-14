@@ -31,7 +31,7 @@ export default function Analytics(state) {
      
       if (state.instance.google_profile_id) {
         const start = moment().subtract(120, "days").format("YYYY-MM-DD");
-        fetchRecentItems(state.user.ZUID, start)
+        fetchRecentItems(state.instance.user.ZUID, state.instance.ZUID, start)
           .then((res) => {
             if (res && res.data) {
               setRecentlyEditedItems(getLastEditedItems(res.data))
@@ -44,9 +44,9 @@ export default function Analytics(state) {
        }
     }, [])
 
-    const fetchRecentItems = (ZUID, start) => {
+    const fetchRecentItems = (userZUID, instanceZUID, start) => {
       return request(
-        `https://${ZUID + process.env.REACT_APP_API_INSTANCE}search/items?q=${ZUID}&order=created&dir=DESC&start_date=${start}`
+        `https://${instanceZUID + process.env.REACT_APP_API_INSTANCE}search/items?q=${userZUID}&order=created&dir=DESC&start_date=${start}`
       )
     }
 
@@ -117,7 +117,7 @@ export default function Analytics(state) {
                   gaLegacyAuth={gaLegacyAuth}
                   domainSet={domainSet}
                   gaAuthenticated={gaAuthenticated}
-                  user={state.user}
+                  user={state.instance.user}
                   instance={state.instance}
                 />
               )}

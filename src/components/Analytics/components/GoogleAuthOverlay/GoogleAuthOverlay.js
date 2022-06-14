@@ -1,3 +1,4 @@
+import {useState} from 'react'
 import { Component, Fragment } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGlobe, faKey, faPlug } from "@fortawesome/free-solid-svg-icons";
@@ -6,8 +7,9 @@ import PublicIcon from "@mui/icons-material/Public";
 import GaAuthenticate from "./GaAuthenticate";
 import styles from "./GoogleAuthOverlay.less";
 
-export class GoogleAuthOverlay extends Component {
-  state = {
+export const GoogleAuthOverlay = ({ gaLegacyAuth, domainSet, gaAuthenticated, user, instance }) => {
+
+  const [state, setState] = useState({
     titles: {
       noDomain: "Please Setup a Domain before Authenticating",
       notAuthenticated: "Please Authenticate Google Analytics",
@@ -23,17 +25,18 @@ export class GoogleAuthOverlay extends Component {
     },
     generalDescription:
       "Authenticating Google Analytics will automate GA tags in your Web Engine renders pages. If you use Zesty.io purely headlessly, Google Analytics will on provide value on rendered web views.",
-  };
+  })
 
-  createAnalyticsPopup = (evt) => {
+
+  const createAnalyticsPopup = (evt) => {
     var address = encodeURI(
       process.env.REACT_APP_SERVICE_GOOGLE_ANALYTICS_AUTH +
         "?user_id=" +
-        this.props.user.ID +
+        user.ID +
         "&account_id=" +
-        this.props.instance.ID +
+        instance.ID +
         "&domain=" +
-        this.props.instance.domains[0].domain
+        instance.domains[0].domain
     );
 
     var win = window.open(
@@ -54,7 +57,6 @@ export class GoogleAuthOverlay extends Component {
     // }, 1000);
   };
 
-  render() {
     return (
       <div className={`${styles.googleAuthOverlay}`}>
         <div className={styles.googleAnaltyicsIntegration}>
@@ -69,22 +71,22 @@ export class GoogleAuthOverlay extends Component {
           </p>
         </div>
 
-        {this.props.domainSet ? (
+        {domainSet ? (
           <Fragment>
-            {this.props.gaLegacyAuth ? (
+            {gaLegacyAuth ? (
               <Fragment>
-                <h2>{this.state.titles.legacyAuthentication}</h2>
-                <p>{this.state.descriptions.legacyAuthentication}</p>
+                <h2>{state.titles.legacyAuthentication}</h2>
+                <p>{state.descriptions.legacyAuthentication}</p>
               </Fragment>
             ) : (
               <Fragment>
-                <h2>{this.state.titles.notAuthenticated}</h2>
-                <p>{this.state.descriptions.notAuthenticated}</p>
+                <h2>{state.titles.notAuthenticated}</h2>
+                <p>{state.descriptions.notAuthenticated}</p>
               </Fragment>
             )}
 
             {/* Exported this button in order to utilize usePermission hook */}
-            <GaAuthenticate onClick={this.createAnalyticsPopup} />
+            <GaAuthenticate onClick={createAnalyticsPopup} />
           </Fragment>
         ) : (
           <Fragment>
@@ -96,7 +98,7 @@ export class GoogleAuthOverlay extends Component {
                 color="secondary"
                 onClick={() => {
                   // window.location = `${CONFIG.URL_ACCOUNTS}/instances/${this.props.instance.ZUID}/launch`;
-                  window.location = `${process.env.REACT_APP_URL_ACCOUNTS}/instances/${this.props.instance.ZUID}/launch`;
+                  window.location = `${process.env.REACT_APP_URL_ACCOUNTS}/instances/${instance.ZUID}/launch`;
                 }}
                 startIcon={<PublicIcon />}
               >
@@ -107,9 +109,8 @@ export class GoogleAuthOverlay extends Component {
         )}
 
         <p className={styles.generalDescription}>
-          {this.state.generalDescription}
+          {state.generalDescription}
         </p>
       </div>
     );
-  }
 }
