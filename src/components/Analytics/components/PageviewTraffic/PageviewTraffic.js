@@ -1,43 +1,34 @@
-import { PureComponent } from "react";
 import React, { useEffect, useState } from 'react'
 import { Line } from "react-chartjs-2";
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { request } from "../../../../utility/request";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChartArea } from "@fortawesome/free-solid-svg-icons";
+import BarChartOutlinedIcon from '@mui/icons-material/BarChartOutlined';
+import GraphContainer from '../GraphContainer';
 
-import styles from "./PageviewTraffic.css";
 
 export const PageviewTraffic = ({ setGALegacyStatus, instanceZUID, profileID, data, domainSet }) => {
 
     const [chartData, setChartData] = useState(data)
 
-    useEffect(() => {
-      if (domainSet) {
-        getBarChartData().then((json) => {
-          if (json && json.chartJSData) {
+    // useEffect(async () => {
 
-            setChartData(json.chartJSData)
+    //   if (domainSet) {
 
-          } else if (json && json.status === 400) {
+    //     const result = await getBarChartData2()
+    //     const data = await result.json()
 
-            setGALegacyStatus(true);
+    //     setChartData(data.chartJSData)
+       
+    //   }
+    // }, [])
 
-          }
-        });
-      }
-    }, [])
+    const getBarChartData2 = () => {
 
-    const getBarChartData = () => {
-      return request(
-        `${process.env.REACT_APP_SERVICE_GOOGLE_ANALYTICS_READ}/?zuid=${instanceZUID}`,
-        {
-          method: "POST",
-          credentials: "omit",
-          headers: {
-            "Content-Type": "plain/text",
+        return fetch(`http://localhost:7373/getPageViewData/?user_id=${instanceZUID}`, {
+          method : 'POST',
+          headers : {
+            'Content-Type' : 'application/json'
           },
-          body: JSON.stringify({
+          body : JSON.stringify({
             gaRequest: {
               reportRequests: [
                 {
@@ -71,29 +62,64 @@ export const PageviewTraffic = ({ setGALegacyStatus, instanceZUID, profileID, da
             },
             type: "bar",
             excludeLabelDimensions: [0],
-          }),
-        }
-      );
+          })
+        })
+
     }
 
+    // const getBarChartData = () => {
+    //   return request(
+    //     `${process.env.REACT_APP_SERVICE_GOOGLE_ANALYTICS_READ}/?zuid=${instanceZUID}`,
+    //     {
+    //       method: "POST",
+    //       credentials: "omit",
+    //       headers: {
+    //         "Content-Type": "plain/text",
+    //       },
+    //       body: JSON.stringify({
+    //         gaRequest: {
+    //           reportRequests: [
+    //             {
+    //               viewId: profileID,
+    //               dateRanges: [
+    //                 {
+    //                   startDate: "14daysAgo",
+    //                   endDate: "today",
+    //                 },
+    //               ],
+    //               metrics: [
+    //                 { expression: "ga:sessions" },
+    //                 { expression: "ga:pageviews" },
+    //               ],
+    //               dimensions: [
+    //                 { name: "ga:date" },
+    //                 { name: "ga:dayOfWeekName" },
+    //                 { name: "ga:month" },
+    //                 { name: "ga:day" },
+    //                 { name: "ga:year" },
+    //               ],
+    //               orderBys: [
+    //                 {
+    //                   fieldName: "ga:date",
+    //                   orderType: "VALUE",
+    //                   sortOrder: "ASCENDING",
+    //                 },
+    //               ],
+    //             },
+    //           ],
+    //         },
+    //         type: "bar",
+    //         excludeLabelDimensions: [0],
+    //       }),
+    //     }
+    //   );
+    // }
+
     return (
-      <Card>
-        <CardHeader>
-          <h2 className={styles.columns}>
-            <div className={styles.column}>
-              <FontAwesomeIcon className={styles.muted} icon={faChartArea} />
-              Pageview/Traffic
-            </div>
-            <div
-              className={`${styles.column} ${styles.muted} ${styles.isAlignedRight}`}
-            >
-              Last 14 Days
-            </div>
-          </h2>
-        </CardHeader>
-        <CardContent>
+      
+      <GraphContainer title="Pageview / Traffic" subTitle="Last 14 Days" icon={ <BarChartOutlinedIcon sx={{ fontSize: 34, paddingRight : '10px', opacity : '0.5' }} />}>
           <Line
-            data={chartData}
+            data={data}
             // width={500}
             height={575}
             options={{
@@ -119,8 +145,7 @@ export const PageviewTraffic = ({ setGALegacyStatus, instanceZUID, profileID, da
               },
             }}
           />
-        </CardContent>
-      </Card>
+      </GraphContainer>
     );
 
 }

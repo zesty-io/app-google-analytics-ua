@@ -5,6 +5,7 @@ import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHashtag } from "@fortawesome/free-solid-svg-icons";
 import { request } from "../../../../utility/request";
+import GraphContainer from '../GraphContainer';
 
 import styles from "./SocialTraffic.less";
 
@@ -12,19 +13,19 @@ export const SocialTraffic = ({ setGALegacyStatus, instanceZUID, profileID, data
 
   const [chartData, setChartData] = useState(data)
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    if(domainSet){
-      getSocialTraffic().then((json) => {
-          if (json && json.chartJSData) {
-            setChartData(json.chartJSData)
-          } else if (json && json.status === 400) {
-            setGALegacyStatus(true);
-          }
-        })
-    }
+  //   if(domainSet){
+  //     getSocialTraffic().then((json) => {
+  //         if (json && json.chartJSData) {
+  //           setChartData(json.chartJSData)
+  //         } else if (json && json.status === 400) {
+  //           setGALegacyStatus(true);
+  //         }
+  //       })
+  //   }
 
-  }, [])
+  // }, [])
 
   const getSocialTraffic = () => {
     return request(
@@ -64,23 +65,9 @@ export const SocialTraffic = ({ setGALegacyStatus, instanceZUID, profileID, data
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <h2 className={styles.columns}>
-          <div className={styles.column}>
-            <FontAwesomeIcon className={styles.muted} icon={faHashtag} />
-            Social Traffic
-          </div>
-          <div
-            className={`${styles.column} ${styles.muted} ${styles.isAlignedRight}`}
-          >
-            Last 14 Days
-          </div>
-        </h2>
-      </CardHeader>
-      <CardContent>
+    <GraphContainer title="Social Traffic" subTitle="Last 14 Days">
         <Doughnut
-          data={chartData}
+          data={data}
           // width={250}
           height={250}
           options={{
@@ -91,8 +78,7 @@ export const SocialTraffic = ({ setGALegacyStatus, instanceZUID, profileID, data
             },
           }}
         />
-      </CardContent>
-    </Card>
+    </GraphContainer>
   )
 
 }

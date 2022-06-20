@@ -32,7 +32,7 @@ export const GoogleAuthOverlay = ({ gaLegacyAuth, domainSet, gaAuthenticated, us
     var address = encodeURI(
       process.env.REACT_APP_SERVICE_GOOGLE_ANALYTICS_AUTH +
         "?user_id=" +
-        user.ID +
+        instance.user +
         "&account_id=" +
         instance.ID +
         "&domain=" +

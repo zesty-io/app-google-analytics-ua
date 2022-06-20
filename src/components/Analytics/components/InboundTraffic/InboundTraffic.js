@@ -1,27 +1,24 @@
 import React, {useEffect, useState} from 'react' 
 import { Doughnut } from "react-chartjs-2";
-import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { request } from "../../../../utility/request";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChartPie } from "@fortawesome/free-solid-svg-icons";
-
-import styles from "./InboundTraffic.less";
+import GraphContainer from '../GraphContainer';
+import PieChartOutlineOutlinedIcon from '@mui/icons-material/PieChartOutlineOutlined';
 
 export const InboundTraffic = ({ data, domainSet, setGALegacyStatus, instanceZUID, profileID}) => {
 
     const [chartData, setChartData] = useState(data)
 
-    useEffect(() => {
-      if (domainSet) {
-        getInboundTraffic().then((json) => {
-          if (json && json.chartJSData) {
-              setChartData(json.chartJSData)
-          } else if (json && json.status === 400) {
-            setGALegacyStatus(true);
-          }
-        });
-      }
-    }, [])
+    // useEffect(() => {
+    //   if (domainSet) {
+    //     getInboundTraffic().then((json) => {
+    //       if (json && json.chartJSData) {
+    //           setChartData(json.chartJSData)
+    //       } else if (json && json.status === 400) {
+    //         setGALegacyStatus(true);
+    //       }
+    //     });
+    //   }
+    // }, [])
 
     const getInboundTraffic = () => {
       return request(
@@ -61,23 +58,9 @@ export const InboundTraffic = ({ data, domainSet, setGALegacyStatus, instanceZUI
     }
 
     return (
-      <Card>
-        <CardHeader>
-          <h2 className={styles.columns}>
-            <div className={styles.column}>
-              <FontAwesomeIcon className={styles.muted} icon={faChartPie} />
-              Inbound Traffic
-            </div>
-            <div
-              className={`${styles.column} ${styles.muted} ${styles.isAlignedRight}`}
-            >
-              Last 14 Days
-            </div>
-          </h2>
-        </CardHeader>
-        <CardContent>
-          <Doughnut
-            data={chartData}
+      <GraphContainer title="Inbound Traffic" subTitle="Last 14 Days" icon={<PieChartOutlineOutlinedIcon sx={{ fontSize: 34, paddingRight : '10px', opacity : '0.5' }} />}>
+        <Doughnut
+            data={data}
             // width={250}
             height={250}
             options={{
@@ -88,8 +71,7 @@ export const InboundTraffic = ({ data, domainSet, setGALegacyStatus, instanceZUI
               },
             }}
           />
-        </CardContent>
-      </Card>
+      </GraphContainer>
     );
 
 }

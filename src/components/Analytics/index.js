@@ -12,6 +12,18 @@ import { fetchRecentItems } from "../../utility/user";
 import shelldata from "./shelldata";
 import styles from "./Analytics.less";
 import { request } from '../../utility/request'
+import Grid from '@mui/material/Grid'
+import Card from '@mui/material/Card'
+import CardHeader from '@mui/material/CardHeader'
+import CardContent from '@mui/material/CardContent'
+import Box from '@mui/material/Box'
+import Typography from "@mui/material/Typography";
+import BarChartOutlinedIcon from '@mui/icons-material/BarChartOutlined';
+import Container from '@mui/material/Container'
+
+//GRAPH DATA
+
+import { getPageTraffic, getInboundTraffic, getSocialTraffic } from '../../lib/graphData'
 
 export default function Analytics(state) {
 
@@ -21,28 +33,69 @@ export default function Analytics(state) {
   const [webEngineOn, setWebEngineOn] = useState(true)
   const [gaAuthenticated, setGaAuthenticated] = useState(Boolean(state.instance.google_profile_id))
   const [gaLegacyAuth, setGaLegacyAuth] = useState(false)
+  const [googleProfileId, setGoogleProfileId] = useState('')
   const [domainSet, setDomainSet] = useState(Boolean(
     state.instance.domains &&
     state.instance.domains[0] &&
     state.instance.domains[0].domain
   ))
 
-    useEffect(()=> {
-     
-      if (state.instance.google_profile_id) {
-        const start = moment().subtract(120, "days").format("YYYY-MM-DD");
-        fetchRecentItems(state.instance.user.ZUID, state.instance.ZUID, start)
-          .then((res) => {
-            if (res && res.data) {
-              setRecentlyEditedItems(getLastEditedItems(res.data))
-              setFavoriteModels(getFavoriteModels(res.data))
-              setLoading(false)
-            } else {
-              setLoading(false)
-            }
-          });
-       }
-    }, [])
+  const [pageTraffic, setPageTraffic] = useState(shelldata.shellBarData)
+  const [inboundTraffic, setInboundTraffic] = useState(shelldata.shellDoughnutData)
+  const [socialTraffic, setSocialTraffic] = useState(shelldata.shellDoughnutData)
+
+  useEffect(async ()=> {
+    
+    fetchGAProfile(state.instance.ID).then(async (data) => {
+
+        const result = await data.json()
+        if(result.length !== 0) {
+
+          setGaAuthenticated(false)
+          setGaLegacyAuth(true)
+
+          const pageTrafficData = await getPageTraffic(state.instance.ID, result[0].profile_id)
+          setPageTraffic(pageTrafficData.chartJSData)
+
+          const inboundTrafficData = await getInboundTraffic(state.instance.ID, result[0].profile_id)
+          setInboundTraffic(inboundTrafficData.chartJSData)
+
+          const getSocialTrafficData = await getSocialTraffic(state.instance.ID, result[0].profile_id)
+          setSocialTraffic(getSocialTrafficData.chartJSData)
+
+          
+        }
+    })
+
+    if (state.instance.google_profile_id) {
+      const start = moment().subtract(120, "days").format("YYYY-MM-DD");
+      fetchRecentItems(state.instance.user.ZUID, state.instance.ZUID, start)
+        .then((res) => {
+          if (res && res.data) {
+            setRecentlyEditedItems(getLastEditedItems(res.data))
+            setFavoriteModels(getFavoriteModels(res.data))
+            setLoading(false)
+          } else {
+            setLoading(false)
+          }
+        });
+      }
+  }, [])
+
+
+    const fetchGAProfile = (user_id) => {
+
+      return fetch(`http://localhost:7373/checkGaProfile`, {
+        method : 'POST',
+        headers : {
+          'Content-Type' : 'application/json'
+        },
+        body : JSON.stringify({
+          user_id : user_id
+        })
+      })
+
+    }
 
     const fetchRecentItems = (userZUID, instanceZUID, start) => {
       return request(
@@ -102,37 +155,32 @@ export default function Analytics(state) {
         .slice(0, 5);
     }
 
-      return (
-        <section className={styles.Dashboard}>
-          <div className={styles.container}>
-            <div
-              className={cx(
-                styles.columns,
-                styles.graphs,
-                styles.analyticsContainer
-              )}
-            >
-              {(!gaAuthenticated || gaLegacyAuth) && (
-                <GoogleAuthOverlay
-                  gaLegacyAuth={gaLegacyAuth}
-                  domainSet={domainSet}
-                  gaAuthenticated={gaAuthenticated}
-                  user={state.instance.user}
-                  instance={state.instance}
-                />
-              )}
-              {/* TODO add Google Auth Modal here */}
-              <div className={cx(styles.column, styles.primary)}>
-                <PageviewTraffic
-                  setGALegacyStatus={setGALegacyStatus}
-                  instanceZUID={state.instance.ZUID}
-                  profileID={state.instance.google_profile_id}
-                  data={shelldata.shellBarData()}
-                  domainSet={domainSet}
-                />
-              </div>
+   
 
-              <div className={styles.column}>
+      return (
+        <>
+        {/* <Grid container spacing={2}>
+            <Grid item xs={7}>
+                <Card >
+                  <CardContent>
+                    <Box display="flex" justifyContent="center">
+                        <Box>
+                          <BarChartOutlinedIcon fontSize="large" sx={{ fontSize: 40, paddingRight : '10px' }} />
+                        </Box>
+                        <Box flexGrow={1}>
+                          <Typography variant="h5" gutterBottom component="div">Pageview / Traffic</Typography>
+                        </Box>
+                        <Box>
+                        <Typography variant="overline" gutterBottom component="div">Last 14 Days</Typography>
+                        </Box>
+                    </Box>
+                    <Box>
+                      Sample
+                    </Box>
+                  </CardContent>
+                </Card>
+            </Grid>
+            <Grid item xs={5} alignItems="stretch">
                 <InboundTraffic
                   setGALegacyStatus={setGALegacyStatus}
                   instanceZUID={state.instance.ZUID}
@@ -147,28 +195,63 @@ export default function Analytics(state) {
                   data={shelldata.shellDoughnutData()}
                   domainSet={domainSet}
                 />
-              </div>
-            </div>
-
-            <div className={styles.columns}>
-              {/*<div className={styles.column}>
-              <ContentVelocity />
-            </div>*/}
-              <div className={cx(styles.column)}>
-                <RecentlyEdited
-                  items={recentlyEditedItems}
-                  loading={loading}
+            </Grid>
+        </Grid> */}
+        <Container maxWidth="xl">
+        <Grid container spacing={4} p={4}>
+            <Grid item xs={7}>
+                <PageviewTraffic
+                  setGALegacyStatus={setGALegacyStatus}
+                  instanceZUID={state.instance.ID}
+                  profileID={googleProfileId}
+                  data={pageTraffic}
+                  domainSet={domainSet}
                 />
-              </div>
-              <div className={cx(styles.column, styles.recent)}>
-                <TopPerforming
-                  instanceZUID={state.instance.ZUID}
-                  profileID={state.instance.google_profile_id}
+            </Grid>
+            <Grid item xs={5}>
+                <Box sx={{
+                  display : "flex",
+                  flexDirection : 'column'
+                }}>
+                  <Box
+                    sx={{
+                      marginBottom : 4
+                    }}>
+                    <InboundTraffic
+                      setGALegacyStatus={setGALegacyStatus}
+                      instanceZUID={state.instance.ZUID}
+                      profileID={state.instance.ID}
+                      data={inboundTraffic}
+                      domainSet={domainSet}
+                    />
+                  </Box>
+                  <Box>
+                    <SocialTraffic
+                      setGALegacyStatus={setGALegacyStatus}
+                      instanceZUID={state.instance.ZUID}
+                      profileID={state.instance.google_profile_id}
+                      data={socialTraffic}
+                      domainSet={domainSet}
+                    />
+                  </Box>
+                  
+                  
+                </Box>
+            </Grid>
+        </Grid>
+        </Container>
+      
+              {/* {(!gaAuthenticated || gaLegacyAuth) && (
+                <GoogleAuthOverlay
+                  gaLegacyAuth={gaLegacyAuth}
+                  domainSet={domainSet}
+                  gaAuthenticated={gaAuthenticated}
+                  user={state.instance.user}
+                  instance={state.instance}
                 />
-              </div>
-            </div>
-          </div>
-        </section>
+              )} */}
+             
+        </>
       );
   }
 // );
