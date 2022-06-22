@@ -256,7 +256,25 @@ export default function Analytics(state) {
                   
                 </Box>
             </Grid>
+            
         </Grid>
+        <Grid container spacing={4} sx={{
+          paddingLeft : 4,
+          paddingRight : 4
+        }} >
+                <Grid item xs={6}>
+                  <RecentlyEdited
+                    items={recentlyEditedItems}
+                    loading={loading}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TopPerforming 
+                    instanceZUID={state.instance.ID}
+                    profileID={googleProfileId} />
+                </Grid>
+                
+            </Grid>
         </Container>
       
               {/* {(!gaAuthenticated || gaLegacyAuth) && (
