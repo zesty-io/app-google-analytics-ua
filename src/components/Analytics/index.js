@@ -89,7 +89,7 @@ export default function Analytics(state) {
 
     const fetchGAProfile = (user_id) => {
 
-      return fetch(`http://localhost:7373/checkGaProfile`, {
+      return fetch(`${process.env.REACT_APP_SERVICE_GOOGLE_ANALYTICS_PROFILE}`, {
         method : 'POST',
         headers : {
           'Content-Type' : 'application/json'

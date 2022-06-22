@@ -24,20 +24,20 @@ export const GraphContainer = ({title, icon, subTitle, children}) => {
                     <Box 
                         flexGrow={1}>
                         <Typography 
-                            variant="label"
+                            variant="h2"
                             sx={{
-                                fontWeight : '500',
-                                fontSize : '14px',
+                                fontWeight : '600',
+                                fontSize : '14pt',
                                 color : '#5b667d',
                                 backgroundColor : '#e4e9f1'
                             }}>{title}</Typography>
                     </Box>
                     <Box>
                         <Typography  
-                            variant="label"
+                            variant="h2"
                             sx={{
                                 fontWeight: '200',
-                                fontSize : '14px'
+                                fontSize : '14pt'
                             }} 
                             >{subTitle}</Typography>
                     </Box>

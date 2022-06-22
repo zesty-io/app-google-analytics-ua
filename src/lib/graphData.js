@@ -1,6 +1,6 @@
 export const getPageTraffic = (userId, profileId) => {
 
-    return fetch(`http://localhost:7373/getPageViewData/?user_id=${userId}`, {
+    return fetch(`${process.env.REACT_APP_SERVICE_GOOGLE_ANALYTICS_READ}/?user_id=${userId}`, {
         method : 'POST',
         headers : {
           'Content-Type' : 'application/json'
@@ -12,8 +12,7 @@ export const getPageTraffic = (userId, profileId) => {
                 viewId: profileId,
                 dateRanges: [
                   {
-                    startDate: "2015-06-01",
-                    endDate: "2022-06-22",
+                    startDate: "14daysAgo", endDate: "today"
                   },
                 ],
                 metrics: [
@@ -51,7 +50,7 @@ export const getPageTraffic = (userId, profileId) => {
 export const getInboundTraffic = (userId, profileId) => {
 
     return fetch(
-        `http://localhost:7373/getPageViewData/?zuid=${userId}`,
+        `${process.env.REACT_APP_SERVICE_GOOGLE_ANALYTICS_READ}/?zuid=${userId}`,
         {
           method: "POST",
           headers: {
@@ -62,8 +61,7 @@ export const getInboundTraffic = (userId, profileId) => {
               reportRequests: [
                 {
                   viewId: profileId,
-                  dateRanges: [{ startDate: "2015-06-01",
-                  endDate: "2022-06-22" }],
+                  dateRanges: [{ startDate: "14daysAgo", endDate: "today" }],
                   metrics: [{ expression: "ga:sessions" }],
                   dimensions: [{ name: "ga:medium" }],
                   dimensionFilterClauses: [
@@ -93,7 +91,7 @@ export const getInboundTraffic = (userId, profileId) => {
 
 export const getSocialTraffic = (userId, profileId) => {
     return fetch(
-        `http://localhost:7373/getPageViewData/?zuid=${userId}`,
+        `${process.env.REACT_APP_SERVICE_GOOGLE_ANALYTICS_READ}/?zuid=${userId}`,
         {
           method: "POST",
           headers: {
@@ -104,8 +102,7 @@ export const getSocialTraffic = (userId, profileId) => {
               reportRequests: [
                 {
                   viewId: profileId,
-                  dateRanges: [{ startDate: "2015-06-01",
-                  endDate: "2022-06-22", }],
+                  dateRanges: [{ startDate: "14daysAgo", endDate: "today" }],
                   metrics: [{ expression: "ga:sessions" }],
                   dimensions: [{ name: "ga:socialNetwork" }],
                   dimensionFilterClauses: [
