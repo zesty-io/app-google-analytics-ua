@@ -63,7 +63,7 @@ export const SocialTraffic = ({ setGALegacyStatus, instanceZUID, profileID, data
         <Doughnut
           data={data}
           // width={250}
-          height={250}
+          height={220}
           options={{
             maintainAspectRatio: false,
             legend: {

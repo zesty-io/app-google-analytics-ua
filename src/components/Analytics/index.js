@@ -20,6 +20,7 @@ import Box from '@mui/material/Box'
 import Typography from "@mui/material/Typography";
 import BarChartOutlinedIcon from '@mui/icons-material/BarChartOutlined';
 import Container from '@mui/material/Container'
+import Backdrop from '@mui/material/Backdrop'
 
 //GRAPH DATA
 
@@ -40,13 +41,14 @@ export default function Analytics(state) {
     state.instance.domains[0].domain
   ))
 
+  const [showAuth, setShowAuth] = useState(false)
   const [pageTraffic, setPageTraffic] = useState(shelldata.shellBarData)
   const [inboundTraffic, setInboundTraffic] = useState(shelldata.shellDoughnutData)
   const [socialTraffic, setSocialTraffic] = useState(shelldata.shellDoughnutData)
 
   useEffect(async ()=> {
     
-    fetchGAProfile(state.instance.ID).then(async (data) => {
+    fetchGAProfile(state.instance.ZUID).then(async (data) => {
 
         const result = await data.json()
         if(result.length !== 0) {
@@ -54,16 +56,18 @@ export default function Analytics(state) {
           setGaAuthenticated(false)
           setGaLegacyAuth(true)
 
-          const pageTrafficData = await getPageTraffic(state.instance.ID, result[0].profile_id)
+          const pageTrafficData = await getPageTraffic(state.instance.ZUID, result[0].profile_id)
           setPageTraffic(pageTrafficData.chartJSData)
 
-          const inboundTrafficData = await getInboundTraffic(state.instance.ID, result[0].profile_id)
+          const inboundTrafficData = await getInboundTraffic(state.instance.ZUID, result[0].profile_id)
           setInboundTraffic(inboundTrafficData.chartJSData)
 
-          const getSocialTrafficData = await getSocialTraffic(state.instance.ID, result[0].profile_id)
+          const getSocialTrafficData = await getSocialTraffic(state.instance.ZUID, result[0].profile_id)
           setSocialTraffic(getSocialTrafficData.chartJSData)
 
           
+        }else{
+          setShowAuth(true)
         }
     })
 
@@ -199,6 +203,20 @@ export default function Analytics(state) {
         </Grid> */}
         <Container maxWidth="xl">
         <Grid container spacing={4} p={4}>
+          <Backdrop
+            sx={{ color: '#fff'}}
+            open={showAuth}
+            onClick={() => {}}
+          >
+                <GoogleAuthOverlay
+                  gaLegacyAuth={gaLegacyAuth}
+                  domainSet={domainSet}
+                  gaAuthenticated={gaAuthenticated}
+                  user={state.instance.user}
+                  instance={state.instance}
+                />
+
+          </Backdrop>
             <Grid item xs={7}>
                 <PageviewTraffic
                   setGALegacyStatus={setGALegacyStatus}

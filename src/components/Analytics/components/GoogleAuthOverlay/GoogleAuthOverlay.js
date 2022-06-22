@@ -6,6 +6,8 @@ import Button from "@mui/material/Button";
 import PublicIcon from "@mui/icons-material/Public";
 import GaAuthenticate from "./GaAuthenticate";
 import styles from "./GoogleAuthOverlay.less";
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
 
 export const GoogleAuthOverlay = ({ gaLegacyAuth, domainSet, gaAuthenticated, user, instance }) => {
 
@@ -58,38 +60,58 @@ export const GoogleAuthOverlay = ({ gaLegacyAuth, domainSet, gaAuthenticated, us
   };
 
     return (
-      <div className={`${styles.googleAuthOverlay}`}>
-        <div className={styles.googleAnaltyicsIntegration}>
-          <img
-            alt="Google Analytics Logo"
-            className={`${styles.googleAnalyticsLogo}`}
-            src="https://developers.google.com/analytics/images/terms/logo_lockup_analytics_icon_vertical_white_2x.png"
-          />
-          <p>
-            <FontAwesomeIcon icon={faPlug} />{" "}
-            <strong>Zesty.io WebEngine™</strong> Integration
-          </p>
-        </div>
-
-        {domainSet ? (
-          <Fragment>
+      <>
+        <Box
+          sx={{
+            display : "flex",
+            flexDirection : "column",
+            justifyItems : 'center',
+            alignItems : 'center',
+          }}>
+          <Box
+            sx={{
+              display : 'flex',
+              flexDirection : 'column',
+              justifyItems : 'center',
+              alignItems : 'center',
+              padding : '20px',
+              backgroundColor : "rgba(0, 0, 0, 0.5);",
+              borderRadius : '5px',
+              marginBottom : '20px'
+            }}>
+            <img
+              alt="Google Analytics Logo"
+              style={{ width : '300px' }}
+              src="https://developers.google.com/analytics/images/terms/logo_lockup_analytics_icon_vertical_white_2x.png"
+            />
+            <div style={{ textAlign : 'center', display: "flex" }}>
+              <FontAwesomeIcon icon={faPlug}/>{" "}<Typography sx={{ marginLeft : '10px' }}>Zesty.io WebEngine™ Integration</Typography>
+            </div>
+          </Box>
+          <Box
+            sx={{
+              width : '700px',
+              textAlign : 'center'
+            }}>
+          {domainSet ? (
+          <>
             {gaLegacyAuth ? (
-              <Fragment>
-                <h2>{state.titles.legacyAuthentication}</h2>
-                <p>{state.descriptions.legacyAuthentication}</p>
-              </Fragment>
+              <>
+                <Typography variant="h5">{state.titles.legacyAuthentication}</Typography>
+                <Typography variant="p" sx={{ fontWeight : '200' }}>{state.descriptions.legacyAuthentication}</Typography>
+              </>
             ) : (
-              <Fragment>
-                <h2>{state.titles.notAuthenticated}</h2>
-                <p>{state.descriptions.notAuthenticated}</p>
-              </Fragment>
+              <>
+                <Typography variant="h5">{state.titles.notAuthenticated}</Typography>
+                <Typography variant="p" sx={{ fontWeight : '200' }}>{state.descriptions.notAuthenticated}</Typography>
+              </>
             )}
 
             {/* Exported this button in order to utilize usePermission hook */}
             <GaAuthenticate onClick={createAnalyticsPopup} />
-          </Fragment>
+          </>
         ) : (
-          <Fragment>
+          <>
             <h2>{this.state.titles.noDomain}</h2>
             <p>{this.state.descriptions.noDomain}</p>
             <div className={styles.buttonHolder}>
@@ -105,12 +127,64 @@ export const GoogleAuthOverlay = ({ gaLegacyAuth, domainSet, gaAuthenticated, us
                 Click here to Setup Your Domain
               </Button>
             </div>
-          </Fragment>
+          </>
         )}
+        </Box>
+        </Box>
+      </>
+      // <div className={`${styles.googleAuthOverlay}`}>
+      //   <div className={styles.googleAnaltyicsIntegration}>
+      //     <img
+      //       alt="Google Analytics Logo"
+      //       className={`${styles.googleAnalyticsLogo}`}
+      //       src="https://developers.google.com/analytics/images/terms/logo_lockup_analytics_icon_vertical_white_2x.png"
+      //     />
+      //     <p>
+      //       <FontAwesomeIcon icon={faPlug} />{" "}
+      //       <strong>Zesty.io WebEngine™</strong> Integration
+      //     </p>
+      //   </div>
 
-        <p className={styles.generalDescription}>
-          {state.generalDescription}
-        </p>
-      </div>
+      //   {domainSet ? (
+      //     <Fragment>
+      //       {gaLegacyAuth ? (
+      //         <Fragment>
+      //           <h2>{state.titles.legacyAuthentication}</h2>
+      //           <p>{state.descriptions.legacyAuthentication}</p>
+      //         </Fragment>
+      //       ) : (
+      //         <Fragment>
+      //           <h2>{state.titles.notAuthenticated}</h2>
+      //           <p>{state.descriptions.notAuthenticated}</p>
+      //         </Fragment>
+      //       )}
+
+      //       {/* Exported this button in order to utilize usePermission hook */}
+      //       <GaAuthenticate onClick={createAnalyticsPopup} />
+      //     </Fragment>
+      //   ) : (
+      //     <Fragment>
+      //       <h2>{this.state.titles.noDomain}</h2>
+      //       <p>{this.state.descriptions.noDomain}</p>
+      //       <div className={styles.buttonHolder}>
+      //         <Button
+      //           variant="contained"
+      //           color="secondary"
+      //           onClick={() => {
+      //             // window.location = `${CONFIG.URL_ACCOUNTS}/instances/${this.props.instance.ZUID}/launch`;
+      //             window.location = `${process.env.REACT_APP_URL_ACCOUNTS}/instances/${instance.ZUID}/launch`;
+      //           }}
+      //           startIcon={<PublicIcon />}
+      //         >
+      //           Click here to Setup Your Domain
+      //         </Button>
+      //       </div>
+      //     </Fragment>
+      //   )}
+
+      //   <p className={styles.generalDescription}>
+      //     {state.generalDescription}
+      //   </p>
+      // </div>
     );
 }

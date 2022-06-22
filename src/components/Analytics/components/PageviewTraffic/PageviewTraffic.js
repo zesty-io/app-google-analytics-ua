@@ -121,7 +121,7 @@ export const PageviewTraffic = ({ setGALegacyStatus, instanceZUID, profileID, da
           <Line
             data={data}
             // width={500}
-            height={575}
+            height={542}
             options={{
               maintainAspectRatio: false,
               bezierCurve: false,

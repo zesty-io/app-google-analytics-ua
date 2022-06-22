@@ -62,7 +62,7 @@ export const InboundTraffic = ({ data, domainSet, setGALegacyStatus, instanceZUI
         <Doughnut
             data={data}
             // width={250}
-            height={250}
+            height={220}
             options={{
               maintainAspectRatio: false,
               legend: {

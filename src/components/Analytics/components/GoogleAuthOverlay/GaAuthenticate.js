@@ -19,6 +19,9 @@ const GaAuthenticates = ({ onClick }) => {
             color="success"
             onClick={onClick}
             startIcon={<KeyIcon />}
+            sx={{
+              marginTop : '20px'
+            }}
           >
             Click here to Authenticate With Google
           </Button>
