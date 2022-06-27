@@ -1,5 +1,6 @@
 import cx from "classnames";
 import moment from "moment";
+import { GaHeader } from '../Header/GaHeader'
 import { useState, useEffect } from 'react' 
 // import { ContentVelocity } from "./components/ContentVelocity";
 import { PageviewTraffic } from "./components/PageviewTraffic";
@@ -61,7 +62,8 @@ export default function Analytics({instance, token}) {
   }, [])
 
       return (
-        <>
+        <> 
+        <GaHeader />
         <Grid container spacing={4} p={4}>
           <Backdrop
             sx={{ color: '#fff'}}
