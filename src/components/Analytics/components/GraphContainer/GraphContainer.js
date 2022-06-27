@@ -3,24 +3,13 @@ import { CardContent, Card,Typography, Box } from "@mui/material"
 export const GraphContainer = ({title, icon, subTitle, children}) => {
 
     return (
-        <Box
-            sx={{
-                backgroundColor : '#fff'
-            }} >
-            <Box 
+            <Card 
                 sx={{
-                    padding: '0px',
-                    border : '1px solid #c3cddf',
-                    borderRadius : '4px',
-                    overFlow : 'hidden'
+                    padding: '20px'
                 }}>
                 <Box 
                     display="flex" 
-                    justifyContent="center"
-                    sx={{
-                        padding : '12px',
-                        backgroundColor : '#e4e9f1'
-                    }}>
+                    justifyContent="center">
                     <Box 
                         flexGrow={1}>
                         <Typography 
@@ -29,7 +18,6 @@ export const GraphContainer = ({title, icon, subTitle, children}) => {
                                 fontWeight : '600',
                                 fontSize : '14pt',
                                 color : '#5b667d',
-                                backgroundColor : '#e4e9f1'
                             }}>{title}</Typography>
                     </Box>
                     <Box>
@@ -44,11 +32,10 @@ export const GraphContainer = ({title, icon, subTitle, children}) => {
                 </Box>
                 <Box
                 sx={{
-                    padding: '12px'}}>
+                    paddingTop: '18px'}}>
                     {children}
                 </Box>
-        </Box>
-    </Box>
+        </Card>
     )
 
 }

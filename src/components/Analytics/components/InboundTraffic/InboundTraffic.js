@@ -8,20 +8,21 @@ export const InboundTraffic = ({ data, domainSet, setGALegacyStatus, instanceZUI
 
     const [chartData, setChartData] = useState(data)
 
-    // useEffect(() => {
-    //   if (domainSet) {
-    //     getInboundTraffic().then((json) => {
-    //       if (json && json.chartJSData) {
-    //           setChartData(json.chartJSData)
-    //       } else if (json && json.status === 400) {
-    //         setGALegacyStatus(true);
-    //       }
-    //     });
-    //   }
-    // }, [])
+    useEffect(async () => {
+      if (domainSet && profileID !== null) {
+
+        const result = await getInboundTraffic()
+
+        if(!result.ok) return setGALegacyStatus(true)
+
+        const data = await result.json()
+
+        setChartData(data.chartJSData)
+      }
+    }, [profileID])
 
     const getInboundTraffic = () => {
-      return request(
+      return fetch(
         `${process.env.REACT_APP_SERVICE_GOOGLE_ANALYTICS_READ}/?zuid=${instanceZUID}`,
         {
           method: "POST",
@@ -60,7 +61,7 @@ export const InboundTraffic = ({ data, domainSet, setGALegacyStatus, instanceZUI
     return (
       <GraphContainer title="Inbound Traffic" subTitle="Last 14 Days" icon={<PieChartOutlineOutlinedIcon sx={{ fontSize: 34, paddingRight : '10px', opacity : '0.5' }} />}>
         <Doughnut
-            data={data}
+            data={chartData}
             // width={250}
             height={220}
             options={{

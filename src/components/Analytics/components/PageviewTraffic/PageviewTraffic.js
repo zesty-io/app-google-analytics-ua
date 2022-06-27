@@ -9,24 +9,27 @@ export const PageviewTraffic = ({ setGALegacyStatus, instanceZUID, profileID, da
 
     const [chartData, setChartData] = useState(data)
 
-    // useEffect(async () => {
+    useEffect(async () => {
+      
+      if(profileID !== null && domainSet){
+        
+        const result = await getBarChartData()
+        if(!result.ok) return setGALegacyStatus(true)
+        const data = await result.json()
+        setChartData(data.chartJSData)
+        setGALegacyStatus(false)
 
-    //   if (domainSet) {
+      }
 
-    //     const result = await getBarChartData2()
-    //     const data = await result.json()
+    }, [profileID])
 
-    //     setChartData(data.chartJSData)
-       
-    //   }
-    // }, [])
+    const getBarChartData = () => {
 
-    const getBarChartData2 = () => {
-
-        return fetch(`http://localhost:7373/getPageViewData/?user_id=${instanceZUID}`, {
+        return fetch(`${process.env.REACT_APP_SERVICE_GOOGLE_ANALYTICS_READ}/?zuid=${instanceZUID}`, {
           method : 'POST',
+          credentials: "omit",
           headers : {
-            'Content-Type' : 'application/json'
+            'Content-Type' : 'text/plain',
           },
           body : JSON.stringify({
             gaRequest: {
@@ -67,61 +70,13 @@ export const PageviewTraffic = ({ setGALegacyStatus, instanceZUID, profileID, da
 
     }
 
-    // const getBarChartData = () => {
-    //   return request(
-    //     `${process.env.REACT_APP_SERVICE_GOOGLE_ANALYTICS_READ}/?zuid=${instanceZUID}`,
-    //     {
-    //       method: "POST",
-    //       credentials: "omit",
-    //       headers: {
-    //         "Content-Type": "plain/text",
-    //       },
-    //       body: JSON.stringify({
-    //         gaRequest: {
-    //           reportRequests: [
-    //             {
-    //               viewId: profileID,
-    //               dateRanges: [
-    //                 {
-    //                   startDate: "14daysAgo",
-    //                   endDate: "today",
-    //                 },
-    //               ],
-    //               metrics: [
-    //                 { expression: "ga:sessions" },
-    //                 { expression: "ga:pageviews" },
-    //               ],
-    //               dimensions: [
-    //                 { name: "ga:date" },
-    //                 { name: "ga:dayOfWeekName" },
-    //                 { name: "ga:month" },
-    //                 { name: "ga:day" },
-    //                 { name: "ga:year" },
-    //               ],
-    //               orderBys: [
-    //                 {
-    //                   fieldName: "ga:date",
-    //                   orderType: "VALUE",
-    //                   sortOrder: "ASCENDING",
-    //                 },
-    //               ],
-    //             },
-    //           ],
-    //         },
-    //         type: "bar",
-    //         excludeLabelDimensions: [0],
-    //       }),
-    //     }
-    //   );
-    // }
-
     return (
       
-      <GraphContainer title="Pageview / Traffic" subTitle="Last 14 Days" icon={ <BarChartOutlinedIcon sx={{ fontSize: 34, paddingRight : '10px', opacity : '0.5' }} />}>
+      <GraphContainer title="Pageview Traffic" subTitle="Last 14 Days" icon={ <BarChartOutlinedIcon sx={{ fontSize: 34, paddingRight : '10px', opacity : '0.5' }} />}>
           <Line
-            data={data}
+            data={chartData}
             // width={500}
-            height={542}
+            height={553}
             options={{
               maintainAspectRatio: false,
               bezierCurve: false,
@@ -129,11 +84,13 @@ export const PageviewTraffic = ({ setGALegacyStatus, instanceZUID, profileID, da
                 yAxes: [
                   {
                     display: true,
+                    
                   },
                 ],
                 xAxes: [
                   {
                     display: false,
+                    
                   },
                 ],
               },

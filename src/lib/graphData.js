@@ -1,9 +1,9 @@
 export const getPageTraffic = (userId, profileId) => {
 
-    return fetch(`${process.env.REACT_APP_SERVICE_GOOGLE_ANALYTICS_READ}/?user_id=${userId}`, {
+    return fetch(`${process.env.REACT_APP_SERVICE_GOOGLE_ANALYTICS_READ}/?zuid=${userId}`, {
         method : 'POST',
         headers : {
-          'Content-Type' : 'application/json'
+          'Content-Type' : 'text/plain'
         },
         body : JSON.stringify({
           gaRequest: {
@@ -54,7 +54,7 @@ export const getInboundTraffic = (userId, profileId) => {
         {
           method: "POST",
           headers: {
-            "Content-Type":  'application/json',
+            "Content-Type":  'text/plain',
           },
           body: JSON.stringify({
             gaRequest: {
@@ -95,7 +95,7 @@ export const getSocialTraffic = (userId, profileId) => {
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "text/plain",
           },
           body: JSON.stringify({
             gaRequest: {

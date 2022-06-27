@@ -4,7 +4,6 @@ import { faGlobe, faKey, faPlug } from "@fortawesome/free-solid-svg-icons";
 import Button from "@mui/material/Button";
 import PublicIcon from "@mui/icons-material/Public";
 import GaAuthenticate from "./GaAuthenticate";
-import styles from "./GoogleAuthOverlay.less";
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 
@@ -33,7 +32,7 @@ export const GoogleAuthOverlay = ({ gaLegacyAuth, domainSet, gaAuthenticated, us
     var address = encodeURI(
       process.env.REACT_APP_SERVICE_GOOGLE_ANALYTICS_AUTH +
         "?user_id=" +
-        instance.user +
+        user +
         "&account_id=" +
         instance.ID +
         "&domain=" +
@@ -90,7 +89,10 @@ export const GoogleAuthOverlay = ({ gaLegacyAuth, domainSet, gaAuthenticated, us
           <Box
             sx={{
               width : '700px',
-              textAlign : 'center'
+              display : 'flex',
+              flexDirection : 'column',
+              justifyItems : 'center',
+              alignItems : 'center'
             }}>
           {domainSet ? (
           <>
@@ -111,21 +113,22 @@ export const GoogleAuthOverlay = ({ gaLegacyAuth, domainSet, gaAuthenticated, us
           </>
         ) : (
           <>
-            <h2>{this.state.titles.noDomain}</h2>
-            <p>{this.state.descriptions.noDomain}</p>
-            <div className={styles.buttonHolder}>
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={() => {
-                  // window.location = `${CONFIG.URL_ACCOUNTS}/instances/${this.props.instance.ZUID}/launch`;
-                  window.location = `${process.env.REACT_APP_URL_ACCOUNTS}/instances/${instance.ZUID}/launch`;
-                }}
-                startIcon={<PublicIcon />}
-              >
-                Click here to Setup Your Domain
-              </Button>
-            </div>
+            <Typography variant="h5">{state.titles.noDomain}</Typography>
+            <Typography variant="p" sx={{ fontWeight : '200' }}>{state.descriptions.noDomain}</Typography>
+            <Button
+              variant="contained"
+              color="secondary"
+              sx={{
+                marginTop : '20px'
+              }}
+              onClick={() => {
+                // window.location = `${CONFIG.URL_ACCOUNTS}/instances/${this.props.instance.ZUID}/launch`;
+                window.location = `${process.env.REACT_APP_URL_ACCOUNTS}/instances/${instance.ZUID}/launch`;
+              }}
+              startIcon={<PublicIcon />}
+            >
+              Click here to Setup Your Domain
+            </Button>
           </>
         )}
         </Box>

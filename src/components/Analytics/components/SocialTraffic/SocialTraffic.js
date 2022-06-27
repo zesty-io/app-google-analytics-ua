@@ -7,22 +7,22 @@ export const SocialTraffic = ({ setGALegacyStatus, instanceZUID, profileID, data
 
   const [chartData, setChartData] = useState(data)
 
-  // useEffect(() => {
+  useEffect(async () => {
 
-  //   if(domainSet){
-  //     getSocialTraffic().then((json) => {
-  //         if (json && json.chartJSData) {
-  //           setChartData(json.chartJSData)
-  //         } else if (json && json.status === 400) {
-  //           setGALegacyStatus(true);
-  //         }
-  //       })
-  //   }
+    if(domainSet && profileID !== null){
+      const result = await getSocialTraffic()
 
-  // }, [])
+      if(!result.ok) return setGALegacyStatus(true)
+
+      const data = await result.json()
+
+      setChartData(data.chartJSData)
+    }
+
+  }, [profileID])
 
   const getSocialTraffic = () => {
-    return request(
+    return fetch(
       `${process.env.REACT_APP_SERVICE_GOOGLE_ANALYTICS_READ}/?zuid=${instanceZUID}`,
       {
         method: "POST",
@@ -61,7 +61,7 @@ export const SocialTraffic = ({ setGALegacyStatus, instanceZUID, profileID, data
   return (
     <GraphContainer title="Social Traffic" subTitle="Last 14 Days">
         <Doughnut
-          data={data}
+          data={chartData}
           // width={250}
           height={220}
           options={{

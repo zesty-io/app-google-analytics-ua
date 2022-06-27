@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
-import { PureComponent } from "react";
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { WithLoader } from "@zesty-io/core/WithLoader";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowCircleUp } from "@fortawesome/free-solid-svg-icons";
-import { request } from "../../../../utility/request";
 import GraphContainer from '../GraphContainer'; 
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Box from '@mui/material/Box'
+import CircularProgress from '@mui/material/CircularProgress';
 
 
 export function TopPerforming({ profileID, instanceZUID }) {
@@ -14,35 +16,31 @@ export function TopPerforming({ profileID, instanceZUID }) {
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    getTopTenContent().then((json) => {
-      if (json && json.tableData) {
-        // find the numbers that are long
-        // truncate at 2 decimal places
-        // this is highly dependant on the format
-        // that the fetch returns ex: [[path, number, number, number], ...]
-        const truncatedData = json.tableData.data.map((row) => {
-          return row.map((col) => {
-            // will not attempt conversion on a path
-            if (Number(col)) {
-              return Number(Math.round(col + "e" + 2) + "e-" + 2);
-            } else {
-              return col;
-            }
-          });
+  useEffect(async () => {
+
+    if(profileID !== null){
+
+      const result = await getTopTenContent()
+      
+      if(!result.ok) return setLoading(false)
+
+      const json = await result.json()
+      const truncatedData = json.tableData.data.map((row) => {
+        return row.map((col) => {
+          // will not attempt conversion on a path
+          if (Number(col)) {
+            return Number(Math.round(col + "e" + 2) + "e-" + 2);
+          } else {
+            return col;
+          }
         });
+      });
 
-        setHeaders(json.tableData.headers)
-        setData(truncatedData)
-        setLoading(false)
-
-      } else {
-
-        setLoading(false)
-
-      }
-    });
-  }, [])
+      setHeaders(json.tableData.headers)
+      setData(truncatedData)
+      setLoading(false)
+    }
+  }, [profileID])
 
  
 
@@ -52,7 +50,7 @@ export function TopPerforming({ profileID, instanceZUID }) {
       {
         method: "POST",
         headers: {
-          "content-type": "application/json",
+          "content-type": "text/plain",
         },
         body: JSON.stringify({
           gaRequest: {
@@ -85,29 +83,49 @@ export function TopPerforming({ profileID, instanceZUID }) {
     return (
 
       <GraphContainer title="Top Performing Content">
-         <WithLoader
-            condition={!loading}
-            message="Loading Top Performing Content"
-          >
-            {headers.length && data.length ? (
-              <table>
-                <tr>
+        {loading ? (
+            <Box
+              sx={{
+                display: 'flex',
+                alignitems : 'center',
+                justifyContent : 'center',
+                padding: '10px'
+              }}>
+              <CircularProgress />
+            </Box>
+
+        ) : (
+          <>
+          {headers.length && data.length ? (
+              
+            <Table>
+              <TableHead>
+                <TableRow>
                   {headers.map((item) => (
-                    <th>{item}</th>
+                    <TableCell sx={{
+                      fontWeight : 600
+                    }}>{item.replace(/([A-Z])/g, ' $1').trim()}</TableCell>
                   ))}
-                </tr>
-                {data.map((data) => (
-                  <tr>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {data.map((data, i) => (
+                  <TableRow>
                     {data.map((field) => (
-                      <td>{field}</td>
+                      <TableCell>{field}</TableCell>
                     ))}
-                  </tr>
+                  </TableRow>
                 ))}
-              </table>
-            ) : (
-              "No content performance data to display"
-            )}
-          </WithLoader>
+              </TableBody>
+            </Table>
+          ) : (
+            "No content performance data to display"
+          )}
+</>
+        )}
+      
+         
+            
       </GraphContainer>
      
     );
