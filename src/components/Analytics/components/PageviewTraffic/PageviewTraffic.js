@@ -29,7 +29,7 @@ export const PageviewTraffic = ({ setGALegacyStatus, instanceZUID, profileID, da
           method : 'POST',
           credentials: "omit",
           headers : {
-            'Content-Type' : 'text/plain',
+            'Content-Type' : 'application/json',
           },
           body : JSON.stringify({
             gaRequest: {

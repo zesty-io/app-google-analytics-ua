@@ -28,7 +28,7 @@ export const SocialTraffic = ({ setGALegacyStatus, instanceZUID, profileID, data
         method: "POST",
         credentials: "omit",
         headers: {
-          "Content-Type": "plain/text",
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           gaRequest: {

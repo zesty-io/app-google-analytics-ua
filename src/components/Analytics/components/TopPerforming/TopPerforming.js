@@ -50,7 +50,7 @@ export function TopPerforming({ profileID, instanceZUID }) {
       {
         method: "POST",
         headers: {
-          "content-type": "text/plain",
+          "content-type": "application/json",
         },
         body: JSON.stringify({
           gaRequest: {

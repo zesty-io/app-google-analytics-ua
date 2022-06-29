@@ -28,7 +28,7 @@ export const InboundTraffic = ({ data, domainSet, setGALegacyStatus, instanceZUI
           method: "POST",
           credentials: "omit",
           headers: {
-            "Content-Type": "plain/text",
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             gaRequest: {

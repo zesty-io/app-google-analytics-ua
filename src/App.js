@@ -7,7 +7,7 @@ function App() {
 		<AppLoader
 			token={process.env.REACT_APP_TOKEN}
 			instance={{
-				ZUID: '8-f48cf3a682-7fthvk',
+				ZUID: '8-45a294a-btwkv9',
 				settings: {
 					seo: {}
 				},

@@ -7,37 +7,50 @@ import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Button from '@mui/material/Button'
-export const GaTable = ({ domains, onCellClick }) => {
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
+
+export const GaTable = ({ domains, onCellClick, selectedDomain }) => {
     return (
         <>
-            <Card sx={{
-                padding : '20px'
-            }}>
-                <Table>
-                    <TableHead>
+            <Card>
+            <Table sx={{minWidth : "600px"}}>
+                <TableHead>
+                    <TableRow>
+                        <TableCell>
+                            <Typography sx={{ fontWeight: "600"}}>Name</Typography>
+                        </TableCell>
+                        <TableCell>
+                            <Typography sx={{ fontWeight: "600"}}>Url</Typography>
+                        </TableCell>
+                        <TableCell>
+                            
+                        </TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {domains.map(domain => (
                         <TableRow>
-                            <TableCell sx={{ width : "300px" }}>
-                                <Typography sx={{fontSize : "12pt", fontWeight: "600"}}>Domain</Typography>
+                            <TableCell>
+                                <Typography sx={{ fontSize : "12pt" }}>{domain.name}</Typography>
                             </TableCell>
                             <TableCell>
-                                
+                                <Typography sx={{ fontSize : "12pt" }}>{domain.websiteUrl}</Typography>
+                            </TableCell>
+                            <TableCell sx={{textAlign : "center"}}>
+                                {selectedDomain === domain.websiteUrl ? (
+                                    <>
+                                        <CheckCircleRoundedIcon color="success" />
+                                    </>
+                                ) : (
+                                    <Button variant="contained" color="secondary" onClick={() => onCellClick(domain)}>Select</Button>
+                                )}
+                               
                             </TableCell>
                         </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {domains.map(domain => (
-                            <TableRow>
-                                <TableCell>
-                                    <Typography sx={{ fontSize : "12pt" }}>{domain.siteName}</Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Button variant="contained" onClick={() => onCellClick(domain)}>Select</Button>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                        
-                    </TableBody>
-                </Table>
+                    ))}
+                    
+                </TableBody>
+            </Table>
             </Card>
         </>
     )
