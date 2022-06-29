@@ -1,6 +1,6 @@
-import { CardContent, Card,Typography, Box } from "@mui/material"
+import { CardContent, Card,Typography, Box, CircularProgress } from "@mui/material"
 
-export const GraphContainer = ({title, icon, subTitle, children}) => {
+export const GraphContainer = ({title, loading = false, subTitle, children}) => {
 
     return (
             <Card 
@@ -32,7 +32,24 @@ export const GraphContainer = ({title, icon, subTitle, children}) => {
                 </Box>
                 <Box
                 sx={{
-                    paddingTop: '18px'}}>
+                    paddingTop: '18px',
+                    position: "relative"}}>
+                    {loading && (
+                        <Box sx={{
+                            top: 0,
+                            left : 0,
+                            right: 0,
+                            bottom : 0,
+                            position : "absolute",
+                            backgroundColor: "rgba(255,255,255, 0.7)",
+                            display : "flex",
+                            alignItems : "center",
+                            justifyContent : "center"
+                        }}>
+                            <CircularProgress />
+                        </Box>
+                    )}
+                    
                     {children}
                 </Box>
         </Card>

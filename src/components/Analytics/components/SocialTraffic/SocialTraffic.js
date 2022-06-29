@@ -6,17 +6,17 @@ import GraphContainer from '../GraphContainer';
 export const SocialTraffic = ({ setGALegacyStatus, instanceZUID, profileID, data, domainSet }) => {
 
   const [chartData, setChartData] = useState(data)
+  const [loading, setLoading] = useState(false)
 
   useEffect(async () => {
 
     if(domainSet && profileID !== null){
+      setLoading(true)
       const result = await getSocialTraffic()
-
       if(!result.ok) return setGALegacyStatus(true)
-
       const data = await result.json()
-
       setChartData(data.chartJSData)
+      setLoading(false)
     }
 
   }, [profileID])
@@ -28,7 +28,7 @@ export const SocialTraffic = ({ setGALegacyStatus, instanceZUID, profileID, data
         method: "POST",
         credentials: "omit",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "text/plain",
         },
         body: JSON.stringify({
           gaRequest: {
@@ -59,7 +59,7 @@ export const SocialTraffic = ({ setGALegacyStatus, instanceZUID, profileID, data
   }
 
   return (
-    <GraphContainer title="Social Traffic" subTitle="Last 14 Days">
+    <GraphContainer title="Social Traffic" subTitle="Last 14 Days" loading={loading}>
         <Doughnut
           data={chartData}
           // width={250}

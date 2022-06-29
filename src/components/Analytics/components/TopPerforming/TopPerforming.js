@@ -14,12 +14,12 @@ export function TopPerforming({ profileID, instanceZUID }) {
 
   const [headers, setHeaders] = useState([])
   const [data, setData] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
 
   useEffect(async () => {
 
     if(profileID !== null){
-
+      setLoading(true)
       const result = await getTopTenContent()
       
       if(!result.ok) return setLoading(false)
@@ -50,7 +50,7 @@ export function TopPerforming({ profileID, instanceZUID }) {
       {
         method: "POST",
         headers: {
-          "content-type": "application/json",
+          "content-type": "text/plain",
         },
         body: JSON.stringify({
           gaRequest: {
@@ -82,20 +82,8 @@ export function TopPerforming({ profileID, instanceZUID }) {
 
     return (
 
-      <GraphContainer title="Top Performing Content">
-        {loading ? (
-            <Box
-              sx={{
-                display: 'flex',
-                alignitems : 'center',
-                justifyContent : 'center',
-                padding: '10px'
-              }}>
-              <CircularProgress />
-            </Box>
-
-        ) : (
-          <>
+      <GraphContainer title="Top Performing Content" loading={loading}>
+        
           {headers.length && data.length ? (
               
             <Table>
@@ -120,12 +108,7 @@ export function TopPerforming({ profileID, instanceZUID }) {
             </Table>
           ) : (
             "No content performance data to display"
-          )}
-</>
-        )}
-      
-         
-            
+          )} 
       </GraphContainer>
      
     );

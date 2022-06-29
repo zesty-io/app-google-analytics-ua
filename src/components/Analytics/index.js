@@ -78,9 +78,9 @@ export default function Analytics({ instance, token }) {
       return setGaLegacyAuth(true)
     }
     const domains = await responseDomain.json()
-    setDomainList(domains)
-    setGoogleProfileId(domains[0].defaultProfileId)
-    setSelectedDomain(domains[0].websiteUrl)
+    setDomainList(domains.items)
+    setGoogleProfileId(domains.items[0].defaultProfileId)
+    setSelectedDomain(domains.items[0].name)
 
   }, []);
 
@@ -168,7 +168,7 @@ export default function Analytics({ instance, token }) {
             onCellClick={(data) => {
               console.log(data);
               changeDomainSelection(data)
-              setSelectedDomain(data.websiteUrl)
+              setSelectedDomain(data.name)
               setShowModal(false);
             }}
           />

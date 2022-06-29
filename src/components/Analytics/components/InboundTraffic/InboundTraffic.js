@@ -7,10 +7,10 @@ import PieChartOutlineOutlinedIcon from '@mui/icons-material/PieChartOutlineOutl
 export const InboundTraffic = ({ data, domainSet, setGALegacyStatus, instanceZUID, profileID}) => {
 
     const [chartData, setChartData] = useState(data)
-
+    const [loading, setLoading] = useState(false)
     useEffect(async () => {
       if (domainSet && profileID !== null) {
-
+        setLoading(true)
         const result = await getInboundTraffic()
 
         if(!result.ok) return setGALegacyStatus(true)
@@ -18,6 +18,7 @@ export const InboundTraffic = ({ data, domainSet, setGALegacyStatus, instanceZUI
         const data = await result.json()
 
         setChartData(data.chartJSData)
+        setLoading(false)
       }
     }, [profileID])
 
@@ -28,7 +29,7 @@ export const InboundTraffic = ({ data, domainSet, setGALegacyStatus, instanceZUI
           method: "POST",
           credentials: "omit",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "text/plain",
           },
           body: JSON.stringify({
             gaRequest: {
@@ -59,7 +60,7 @@ export const InboundTraffic = ({ data, domainSet, setGALegacyStatus, instanceZUI
     }
 
     return (
-      <GraphContainer title="Inbound Traffic" subTitle="Last 14 Days" icon={<PieChartOutlineOutlinedIcon sx={{ fontSize: 34, paddingRight : '10px', opacity : '0.5' }} />}>
+      <GraphContainer title="Inbound Traffic" subTitle="Last 14 Days" loading={loading}>
         <Doughnut
             data={chartData}
             // width={250}

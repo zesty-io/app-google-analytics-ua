@@ -8,17 +8,18 @@ import GraphContainer from '../GraphContainer';
 export const PageviewTraffic = ({ setGALegacyStatus, instanceZUID, profileID, data, domainSet }) => {
 
     const [chartData, setChartData] = useState(data)
+    const [loading, setLoading] = useState(false)
 
     useEffect(async () => {
       
       if(profileID !== null && domainSet){
-        
+        setLoading(true)
         const result = await getBarChartData()
         if(!result.ok) return setGALegacyStatus(true)
         const data = await result.json()
         setChartData(data.chartJSData)
         setGALegacyStatus(false)
-
+        setLoading(false)
       }
 
     }, [profileID])
@@ -29,7 +30,7 @@ export const PageviewTraffic = ({ setGALegacyStatus, instanceZUID, profileID, da
           method : 'POST',
           credentials: "omit",
           headers : {
-            'Content-Type' : 'application/json',
+            'Content-Type' : 'text/plain',
           },
           body : JSON.stringify({
             gaRequest: {
@@ -72,7 +73,7 @@ export const PageviewTraffic = ({ setGALegacyStatus, instanceZUID, profileID, da
 
     return (
       
-      <GraphContainer title="Pageview Traffic" subTitle="Last 14 Days" icon={ <BarChartOutlinedIcon sx={{ fontSize: 34, paddingRight : '10px', opacity : '0.5' }} />}>
+      <GraphContainer title="Pageview Traffic" subTitle="Last 14 Days" loading={loading}>
           <Line
             data={chartData}
             // width={500}
