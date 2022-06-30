@@ -25,62 +25,68 @@ export default function Analytics({ instance, token }) {
       instance.domains && instance.domains[0] && instance.domains[0].domain
     )
   );
-  const [pageTraffic, setPageTraffic] = useState(shelldata.shellBarData);
-  const [inboundTraffic, setInboundTraffic] = useState(
-    shelldata.shellDoughnutData
-  );
-  const [socialTraffic, setSocialTraffic] = useState(
-    shelldata.shellDoughnutData
-  );
   const [googleProfileId, setGoogleProfileId] = useState(null);
   const [userId, setUserId] = useState(null);
   const [showModal, setShowModal] = useState(false)
   const [domainList, setDomainList] = useState([])
   const [selectedDomain, setSelectedDomain] = useState('No Selected Domain')
-
-  
+  const ZestyAPI = new window.Zesty.FetchWrapper(instance.ZUID, token, {
+    authAPIURL: `${process.env.REACT_APP_AUTH_API}`,
+    instancesAPIURL: `${process.env.REACT_APP_INSTANCE_API}`,
+    accountsAPIURL: `${process.env.REACT_APP_ACCOUNTS_API}`,
+    mediaAPIURL: `${process.env.REACT_APP_MEDIA_API}`,
+    sitesServiceURL: `${process.env.REACT_APP_SITES_SERVICE}`,
+  });
+  const [googleProfile, setGoogleProfile] = useState(null)
+  const [googleUrchinId, setGoogleUrchinId] = useState(null)
 
   useEffect(async () => {
-    // const ZestyAPI = new window.Zesty.FetchWrapper(instance.ZUID, token, {
-    //   authAPIURL: `${process.env.REACT_APP_AUTH_API}`,
-    //   instancesAPIURL: `${process.env.REACT_APP_INSTANCE_API}`,
-    //   accountsAPIURL: `${process.env.REACT_APP_ACCOUNTS_API}`,
-    //   mediaAPIURL: `${process.env.REACT_APP_MEDIA_API}`,
-    //   sitesServiceURL: `${process.env.REACT_APP_SITES_SERVICE}`,
-    // });
-    // const user = await ZestyAPI.verify();
-    // if (user.data === null) return setGaAuthenticated(false);
 
-    // setUserId(user.data);
-
-    // const settings = await ZestyAPI.getSettings();
-
-    // if (Object.keys(settings.data).length === 0)
-    //   return setGaAuthenticated(false);
-
-    // const gaProfile = settings.data.find(
-    //   (setting) => setting.key === "google_profile_id"
-    // );
-
-    // if (gaProfile) {
-    //   setGoogleProfileId(gaProfile.value);
-    //   setGaAuthenticated(true);
-    // }
-
-    // const gaProfile = await getGaProfile()
-    // if (gaProfile) {
-    //   setGoogleProfileId(gaProfile[0].profile_id);
-    // }
-
+    const user = await ZestyAPI.verify();
+    if (user.data === null) return setGaAuthenticated(false);
+    setUserId(user.data);
 
     const responseDomain = await getGaDomain()
-    if(!responseDomain.ok){
-      return setGaLegacyAuth(true)
-    }
+    if(!responseDomain.ok) return setGaLegacyAuth(true)
     const domains = await responseDomain.json()
+    console.log(domains)
     setDomainList(domains.items)
-    setGoogleProfileId(domains.items[0].defaultProfileId)
-    setSelectedDomain(domains.items[0].name)
+
+    const settings = await ZestyAPI.getSettings();
+    if (Object.keys(settings.data).length === 0) return setGaAuthenticated(false);
+
+    const gaProfile = settings.data.find(
+      (setting) => setting.key === "google_profile_id"
+    )
+    setGoogleProfile(gaProfile)
+
+    const urchinId = settings.data.find(
+      (setting) => setting.key === "google_urchin_id"
+    )
+    setGoogleUrchinId(urchinId)
+
+    if (
+        gaProfile && 
+        urchinId &&
+        gaProfile.value !== '' &&
+        urchinId.value !== ''
+      ) {
+
+
+      const selectDomain = domains.items.find(domain => domain.defaultProfileId === gaProfile.value)
+      if(selectDomain){
+        setGoogleProfileId(selectDomain.defaultProfileId);
+        setSelectedDomain(selectDomain.name)
+        setGaAuthenticated(true);
+      }else{
+
+        setShowModal(true)
+      }
+      
+
+    }else{
+      setShowModal(true)
+    }
 
   }, []);
 
@@ -95,31 +101,25 @@ export default function Analytics({ instance, token }) {
 
   };
 
-  //FOR TESTING : Local checking for ga profile
-  const getGaProfile = async () => {
-    const response = await fetch(`${process.env.REACT_APP_SERVICE_GOOGLE_PROFILE}`, {
-      method : 'POST',
-      headers : {
-        "Content-Type" : "application/json"
-      },
-      body : JSON.stringify({
-        user_id : instance.ZUID
-      })
-    })
-    const profile = await response.json()
+  const changeDomainSelection = async (domain) => { 
 
-    return profile
-  }
-
-  const changeDomainSelection = (domain) => { 
+    googleProfile["value"] = domain.defaultProfileId
+    googleUrchinId["value"] = domain.id
+    
     setGoogleProfileId(domain.defaultProfileId)
+
+    await ZestyAPI.updateSetting(googleProfile.ZUID, googleProfile)
+    await ZestyAPI.updateSetting(googleUrchinId.ZUID, googleUrchinId)
   }
 
   return (
     <>
       {/* Googgle Authentication Modal */}
       <Backdrop
-        sx={{ color: "#fff" }}
+        sx={{ 
+            color: "#fff",
+            zIndex : 20
+        }}
         open={!gaAuthenticated || gaLegacyAuth}
         onClick={() => {}}
       >
@@ -207,7 +207,7 @@ export default function Analytics({ instance, token }) {
               setGALegacyStatus={setGaLegacyAuth}
               instanceZUID={instance.ZUID}
               profileID={googleProfileId}
-              data={pageTraffic}
+              data={shelldata.shellBarData}
               domainSet={domainSet}
             />
           </Grid>
@@ -227,7 +227,7 @@ export default function Analytics({ instance, token }) {
                   setGALegacyStatus={setGaLegacyAuth}
                   instanceZUID={instance.ZUID}
                   profileID={googleProfileId}
-                  data={inboundTraffic}
+                  data={shelldata.shellDoughnutData}
                   domainSet={domainSet}
                 />
               </Box>
@@ -236,7 +236,7 @@ export default function Analytics({ instance, token }) {
                   setGALegacyStatus={setGaLegacyAuth}
                   instanceZUID={instance.ZUID}
                   profileID={googleProfileId}
-                  data={socialTraffic}
+                  data={shelldata.shellDoughnutData}
                   domainSet={domainSet}
                 />
               </Box>
