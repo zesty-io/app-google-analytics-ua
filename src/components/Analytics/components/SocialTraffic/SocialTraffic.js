@@ -10,7 +10,7 @@ export const SocialTraffic = ({ setGALegacyStatus, instanceZUID, profileID, data
 
   useEffect(async () => {
 
-    if(domainSet && profileID !== null){
+    if(profileID !== null){
       setLoading(true)
       const result = await getSocialTraffic()
       if(!result.ok) return setGALegacyStatus(true)

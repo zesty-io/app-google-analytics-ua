@@ -12,7 +12,7 @@ export const PageviewTraffic = ({ setGALegacyStatus, instanceZUID, profileID, da
 
     useEffect(async () => {
       
-      if(profileID !== null && domainSet){
+      if(profileID !== null){
         setLoading(true)
         const result = await getBarChartData()
         if(!result.ok) return setGALegacyStatus(true)

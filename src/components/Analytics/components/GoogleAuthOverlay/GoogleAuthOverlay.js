@@ -7,7 +7,7 @@ import GaAuthenticate from "./GaAuthenticate";
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 
-export const GoogleAuthOverlay = ({ gaLegacyAuth, domainSet, gaAuthenticated, user, instance }) => {
+export const GoogleAuthOverlay = ({ gaLegacyAuth, gaAuthenticated, user, instance }) => {
 
   const [state, setState] = useState({
     titles: {
@@ -94,8 +94,7 @@ export const GoogleAuthOverlay = ({ gaLegacyAuth, domainSet, gaAuthenticated, us
               justifyItems : 'center',
               alignItems : 'center'
             }}>
-          {domainSet ? (
-          <>
+          
             {gaLegacyAuth ? (
               <>
                 <Typography variant="h5">{state.titles.legacyAuthentication}</Typography>
@@ -110,83 +109,10 @@ export const GoogleAuthOverlay = ({ gaLegacyAuth, domainSet, gaAuthenticated, us
 
             {/* Exported this button in order to utilize usePermission hook */}
             <GaAuthenticate onClick={createAnalyticsPopup} />
-          </>
-        ) : (
-          <>
-            <Typography variant="h5">{state.titles.noDomain}</Typography>
-            <Typography variant="p" sx={{ fontWeight : '200' }}>{state.descriptions.noDomain}</Typography>
-            <Button
-              variant="contained"
-              color="secondary"
-              sx={{
-                marginTop : '20px'
-              }}
-              onClick={() => {
-                // window.location = `${CONFIG.URL_ACCOUNTS}/instances/${this.props.instance.ZUID}/launch`;
-                window.location = `${process.env.REACT_APP_URL_ACCOUNTS}/instances/${instance.ZUID}/launch`;
-              }}
-              startIcon={<PublicIcon />}
-            >
-              Click here to Setup Your Domain
-            </Button>
-          </>
-        )}
+         
         </Box>
         </Box>
       </>
-      // <div className={`${styles.googleAuthOverlay}`}>
-      //   <div className={styles.googleAnaltyicsIntegration}>
-      //     <img
-      //       alt="Google Analytics Logo"
-      //       className={`${styles.googleAnalyticsLogo}`}
-      //       src="https://developers.google.com/analytics/images/terms/logo_lockup_analytics_icon_vertical_white_2x.png"
-      //     />
-      //     <p>
-      //       <FontAwesomeIcon icon={faPlug} />{" "}
-      //       <strong>Zesty.io WebEngine™</strong> Integration
-      //     </p>
-      //   </div>
-
-      //   {domainSet ? (
-      //     <Fragment>
-      //       {gaLegacyAuth ? (
-      //         <Fragment>
-      //           <h2>{state.titles.legacyAuthentication}</h2>
-      //           <p>{state.descriptions.legacyAuthentication}</p>
-      //         </Fragment>
-      //       ) : (
-      //         <Fragment>
-      //           <h2>{state.titles.notAuthenticated}</h2>
-      //           <p>{state.descriptions.notAuthenticated}</p>
-      //         </Fragment>
-      //       )}
-
-      //       {/* Exported this button in order to utilize usePermission hook */}
-      //       <GaAuthenticate onClick={createAnalyticsPopup} />
-      //     </Fragment>
-      //   ) : (
-      //     <Fragment>
-      //       <h2>{this.state.titles.noDomain}</h2>
-      //       <p>{this.state.descriptions.noDomain}</p>
-      //       <div className={styles.buttonHolder}>
-      //         <Button
-      //           variant="contained"
-      //           color="secondary"
-      //           onClick={() => {
-      //             // window.location = `${CONFIG.URL_ACCOUNTS}/instances/${this.props.instance.ZUID}/launch`;
-      //             window.location = `${process.env.REACT_APP_URL_ACCOUNTS}/instances/${instance.ZUID}/launch`;
-      //           }}
-      //           startIcon={<PublicIcon />}
-      //         >
-      //           Click here to Setup Your Domain
-      //         </Button>
-      //       </div>
-      //     </Fragment>
-      //   )}
-
-      //   <p className={styles.generalDescription}>
-      //     {state.generalDescription}
-      //   </p>
-      // </div>
+   
     );
 }

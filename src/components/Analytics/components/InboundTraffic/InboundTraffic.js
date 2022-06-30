@@ -9,7 +9,7 @@ export const InboundTraffic = ({ data, domainSet, setGALegacyStatus, instanceZUI
     const [chartData, setChartData] = useState(data)
     const [loading, setLoading] = useState(false)
     useEffect(async () => {
-      if (domainSet && profileID !== null) {
+      if (profileID !== null) {
         setLoading(true)
         const result = await getInboundTraffic()
 

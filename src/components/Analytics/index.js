@@ -20,11 +20,6 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 export default function Analytics({ instance, token }) {
   const [gaAuthenticated, setGaAuthenticated] = useState(true); // we need check if the google profile id is available
   const [gaLegacyAuth, setGaLegacyAuth] = useState(false); // we need response body from cloud function could change this
-  const [domainSet, setDomainSet] = useState(
-    Boolean(
-      instance.domains && instance.domains[0] && instance.domains[0].domain
-    )
-  );
   const [googleProfileId, setGoogleProfileId] = useState(null);
   const [userId, setUserId] = useState(null);
   const [showModal, setShowModal] = useState(false)
@@ -125,7 +120,6 @@ export default function Analytics({ instance, token }) {
       >
         <GoogleAuthOverlay
           gaLegacyAuth={gaLegacyAuth}
-          domainSet={domainSet}
           gaAuthenticated={gaAuthenticated}
           user={userId}
           instance={instance}
@@ -208,7 +202,6 @@ export default function Analytics({ instance, token }) {
               instanceZUID={instance.ZUID}
               profileID={googleProfileId}
               data={shelldata.shellBarData}
-              domainSet={domainSet}
             />
           </Grid>
           <Grid item xs={12} md={5} lg={5}>
@@ -228,7 +221,6 @@ export default function Analytics({ instance, token }) {
                   instanceZUID={instance.ZUID}
                   profileID={googleProfileId}
                   data={shelldata.shellDoughnutData}
-                  domainSet={domainSet}
                 />
               </Box>
               <Box>
@@ -237,7 +229,6 @@ export default function Analytics({ instance, token }) {
                   instanceZUID={instance.ZUID}
                   profileID={googleProfileId}
                   data={shelldata.shellDoughnutData}
-                  domainSet={domainSet}
                 />
               </Box>
             </Box>
