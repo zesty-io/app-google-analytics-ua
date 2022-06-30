@@ -8,6 +8,7 @@ A marketplace application that integrates to Google Analytics
 -   `npm install`
 -   copy .env.example to .env
 -   get session token and set `REACT_APP_TOKEN` in .env
+-   get instance ZUID and set `REACT_APP_ZUID` in .env
 -   `npm start`
     -   Will open up http://localhost:3000/app-google-analytics
 -   Have fun!

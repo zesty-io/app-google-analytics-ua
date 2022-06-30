@@ -1,10 +1,8 @@
 import React, {useEffect, useState} from 'react' 
 import { Doughnut } from "react-chartjs-2";
-import { request } from "../../../../utility/request";
 import GraphContainer from '../GraphContainer';
-import PieChartOutlineOutlinedIcon from '@mui/icons-material/PieChartOutlineOutlined';
 
-export const InboundTraffic = ({ data, domainSet, setGALegacyStatus, instanceZUID, profileID}) => {
+export const InboundTraffic = ({ data, setGALegacyStatus, instanceZUID, profileID}) => {
 
     const [chartData, setChartData] = useState(data)
     const [loading, setLoading] = useState(false)

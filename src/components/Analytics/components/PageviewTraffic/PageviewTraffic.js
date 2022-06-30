@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { Line } from "react-chartjs-2";
-import { request } from "../../../../utility/request";
 import BarChartOutlinedIcon from '@mui/icons-material/BarChartOutlined';
 import GraphContainer from '../GraphContainer';
 
