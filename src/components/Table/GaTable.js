@@ -34,10 +34,16 @@ export const GaTable = ({ domains = [], onCellClick, selectedDomain }) => {
             <TableHead>
               <TableRow>
                 <TableCell>
-                  <Typography sx={{ fontWeight: "600" }}>Name</Typography>
+                  <Typography sx={{ fontWeight: "600", width : 200 }}>Property Name</Typography>
                 </TableCell>
                 <TableCell>
                   <Typography sx={{ fontWeight: "600" }}>Url</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography sx={{ fontWeight: "600" }}>Profile Id</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography sx={{ fontWeight: "600", width : 150 }}>Urchin Id</Typography>
                 </TableCell>
                 <TableCell></TableCell>
               </TableRow>
@@ -59,6 +65,16 @@ export const GaTable = ({ domains = [], onCellClick, selectedDomain }) => {
                   <TableCell>
                     <Typography sx={{ fontSize: "12pt" }}>
                       {domain.websiteUrl}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography sx={{ fontSize: "12pt" }}>
+                      {domain.defaultProfileId}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography sx={{ fontSize: "12pt" }}>
+                      {domain.id}
                     </Typography>
                   </TableCell>
                   <TableCell sx={{ textAlign: "center" }}>
@@ -83,7 +99,7 @@ export const GaTable = ({ domains = [], onCellClick, selectedDomain }) => {
               <TableRow>
                 <TablePagination
                   rowsPerPageOptions={[]}
-                  colSpan={3}
+                  colSpan={5}
                   count={domains.length}
                   rowsPerPage={rowsPerPage}
                   page={page}

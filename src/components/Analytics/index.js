@@ -142,13 +142,21 @@ export default function Analytics({ instance, token }) {
             sx={{
               paddingBottom: 4,
               display: "flex",
-              alignItems: "center",
               justifyContent: "center",
             }}
           >
-            <Box sx={{ flexGrow: 1 }}>
+            <Box sx={{ 
+                flexGrow: 1,
+                paddingRight : 4 }}>
               <Typography sx={{ fontWeight: 600, fontSize: "14pt" }}>
                 Choose from domain list
+              </Typography>
+              <Typography
+                sx={{
+                  fontWeight : 300,
+                  fontSize: "12pt"
+                }}>
+                  Choosing a domain will update your google profile id, google accounts id, and google urchin id (legacy). This change updates production when your cache is refreshed
               </Typography>
             </Box>
             <Box>
@@ -162,6 +170,7 @@ export default function Analytics({ instance, token }) {
               </IconButton>
             </Box>
           </Box>
+         
           <GaTable
             domains={domainList}
             selectedDomain={selectedDomain}
@@ -196,7 +205,7 @@ export default function Analytics({ instance, token }) {
               color="secondary"
               onClick={() => setShowModal(true)}
             >
-              Select Domain
+              {googleProfileId ? 'Change' : 'Select'} Domain
             </Button>
           </Box>
         </Box>
