@@ -83,13 +83,25 @@ export const GaTable = ({ domains = [], onCellClick, selectedDomain }) => {
                         <CheckCircleRoundedIcon color="success" />
                       </>
                     ) : (
-                      <Button
-                        variant="contained"
-                        color="secondary"
-                        onClick={() => onCellClick(domain)}
-                      >
-                        Select
-                      </Button>
+                      <>
+                        {domain.permissions.effective.includes("READ_AND_ANALYZE") ? (
+                            <>
+                              <Button
+                                variant="contained"
+                                color="secondary"
+                                onClick={() => onCellClick(domain)}
+                              >
+                                Select
+                              </Button>
+                            </>
+                          ): (
+                            <>
+                             <Button disabled>Select</Button>
+                            </>
+                          )
+                        }
+                      </>
+                     
                     )}
                   </TableCell>
                 </TableRow>
