@@ -1,36 +1,33 @@
 import React, {useEffect, useState} from 'react' 
 import { Doughnut } from "react-chartjs-2";
-import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
-import { request } from "../../../../utility/request";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChartPie } from "@fortawesome/free-solid-svg-icons";
+import GraphContainer from '../GraphContainer';
 
-import styles from "./InboundTraffic.less";
-
-export const InboundTraffic = ({ data, domainSet, setGALegacyStatus, instanceZUID, profileID}) => {
+export const InboundTraffic = ({ data, setGALegacyStatus, instanceZUID, profileID}) => {
 
     const [chartData, setChartData] = useState(data)
+    const [loading, setLoading] = useState(false)
+    useEffect(async () => {
+      if (profileID !== null) {
+        setLoading(true)
+        const result = await getInboundTraffic()
 
-    useEffect(() => {
-      if (domainSet) {
-        getInboundTraffic().then((json) => {
-          if (json && json.chartJSData) {
-              setChartData(json.chartJSData)
-          } else if (json && json.status === 400) {
-            setGALegacyStatus(true);
-          }
-        });
+        if(!result.ok) return setGALegacyStatus(true)
+
+        const data = await result.json()
+
+        setChartData(data.chartJSData)
+        setLoading(false)
       }
-    }, [])
+    }, [profileID])
 
     const getInboundTraffic = () => {
-      return request(
+      return fetch(
         `${process.env.REACT_APP_SERVICE_GOOGLE_ANALYTICS_READ}/?zuid=${instanceZUID}`,
         {
           method: "POST",
           credentials: "omit",
           headers: {
-            "Content-Type": "plain/text",
+            "Content-Type": "text/plain",
           },
           body: JSON.stringify({
             gaRequest: {
@@ -61,25 +58,11 @@ export const InboundTraffic = ({ data, domainSet, setGALegacyStatus, instanceZUI
     }
 
     return (
-      <Card>
-        <CardHeader>
-          <h2 className={styles.columns}>
-            <div className={styles.column}>
-              <FontAwesomeIcon className={styles.muted} icon={faChartPie} />
-              Inbound Traffic
-            </div>
-            <div
-              className={`${styles.column} ${styles.muted} ${styles.isAlignedRight}`}
-            >
-              Last 14 Days
-            </div>
-          </h2>
-        </CardHeader>
-        <CardContent>
-          <Doughnut
+      <GraphContainer title="Inbound Traffic" subTitle="Last 14 Days" loading={loading}>
+        <Doughnut
             data={chartData}
             // width={250}
-            height={250}
+            height={220}
             options={{
               maintainAspectRatio: false,
               legend: {
@@ -88,8 +71,7 @@ export const InboundTraffic = ({ data, domainSet, setGALegacyStatus, instanceZUI
               },
             }}
           />
-        </CardContent>
-      </Card>
+      </GraphContainer>
     );
 
 }

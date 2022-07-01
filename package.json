@@ -21,6 +21,7 @@
     "@typescript-eslint/parser": "^4.5.0",
     "@zesty-io/app-sdk": "^1.0.0-alpha.1",
     "@zesty-io/core": "^1.6.1",
+    "@zesty-io/material": "^0.1.4",
     "@zesty-io/react-app-loader": "^1.0.0-alpha.1",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^26.6.0",
@@ -88,9 +89,14 @@
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
+    "build:dev": "env-cmd -f .env npm run build",
+    "build:stage": "env-cmd -f .env.stage npm run build",
+    "build:production": "env-cmd -f .env.production npm run build",
     "test": "node scripts/test.js",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy-stage": "gsutil cp -r ./build/* gs://apps.stage.zesty.io/google-analytics/",
+    "deploy-prod": "gsutil cp -r ./build/* gs://apps.zesty.io/google-analytics/",
+    "deploy-dev": "gsutil cp -r ./build/* gs://apps.dev.zesty.io/google-analytics/"
   },
   "eslintConfig": {
     "extends": [
@@ -111,6 +117,7 @@
     ]
   },
   "devDependencies": {
+    "env-cmd": "^10.1.0",
     "gh-pages": "^3.2.3",
     "less": "^4.1.1",
     "less-loader": "^7.3.0",

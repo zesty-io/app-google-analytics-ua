@@ -1,39 +1,33 @@
 import React, { useState, useEffect } from 'react'
-import { PureComponent } from "react";
 import { Doughnut } from "react-chartjs-2";
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHashtag } from "@fortawesome/free-solid-svg-icons";
-import { request } from "../../../../utility/request";
-
-import styles from "./SocialTraffic.less";
+import GraphContainer from '../GraphContainer';
 
 export const SocialTraffic = ({ setGALegacyStatus, instanceZUID, profileID, data, domainSet }) => {
 
   const [chartData, setChartData] = useState(data)
+  const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
+  useEffect(async () => {
 
-    if(domainSet){
-      getSocialTraffic().then((json) => {
-          if (json && json.chartJSData) {
-            setChartData(json.chartJSData)
-          } else if (json && json.status === 400) {
-            setGALegacyStatus(true);
-          }
-        })
+    if(profileID !== null){
+      setLoading(true)
+      const result = await getSocialTraffic()
+      if(!result.ok) return setGALegacyStatus(true)
+      const data = await result.json()
+      setChartData(data.chartJSData)
+      setLoading(false)
     }
 
-  }, [])
+  }, [profileID])
 
   const getSocialTraffic = () => {
-    return request(
+    return fetch(
       `${process.env.REACT_APP_SERVICE_GOOGLE_ANALYTICS_READ}/?zuid=${instanceZUID}`,
       {
         method: "POST",
         credentials: "omit",
         headers: {
-          "Content-Type": "plain/text",
+          "Content-Type": "text/plain",
         },
         body: JSON.stringify({
           gaRequest: {
@@ -64,25 +58,11 @@ export const SocialTraffic = ({ setGALegacyStatus, instanceZUID, profileID, data
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <h2 className={styles.columns}>
-          <div className={styles.column}>
-            <FontAwesomeIcon className={styles.muted} icon={faHashtag} />
-            Social Traffic
-          </div>
-          <div
-            className={`${styles.column} ${styles.muted} ${styles.isAlignedRight}`}
-          >
-            Last 14 Days
-          </div>
-        </h2>
-      </CardHeader>
-      <CardContent>
+    <GraphContainer title="Social Traffic" subTitle="Last 14 Days" loading={loading}>
         <Doughnut
           data={chartData}
           // width={250}
-          height={250}
+          height={220}
           options={{
             maintainAspectRatio: false,
             legend: {
@@ -91,8 +71,7 @@ export const SocialTraffic = ({ setGALegacyStatus, instanceZUID, profileID, data
             },
           }}
         />
-      </CardContent>
-    </Card>
+    </GraphContainer>
   )
 
 }

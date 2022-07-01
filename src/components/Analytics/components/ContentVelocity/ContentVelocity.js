@@ -1,7 +1,10 @@
 import { Component } from "react";
-import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
+//import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChartLine } from "@fortawesome/free-solid-svg-icons";
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import CardContent from '@mui/material/CardContent'
 
 export const ContentVelocity = () => {
 

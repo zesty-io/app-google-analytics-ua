@@ -1,174 +1,252 @@
-import cx from "classnames";
-import moment from "moment";
-import { useState, useEffect } from 'react' 
-// import { ContentVelocity } from "./components/ContentVelocity";
+import { useState, useEffect } from "react";
 import { PageviewTraffic } from "./components/PageviewTraffic";
 import { InboundTraffic } from "./components/InboundTraffic";
 import { SocialTraffic } from "./components/SocialTraffic";
 import { TopPerforming } from "./components/TopPerforming";
-import { RecentlyEdited } from "./components/RecentlyEdited";
 import { GoogleAuthOverlay } from "./components/GoogleAuthOverlay";
-import { fetchRecentItems } from "../../utility/user";
+import { GaTable } from "../Table/GaTable";
 import shelldata from "./shelldata";
-import styles from "./Analytics.less";
-import { request } from '../../utility/request'
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import Backdrop from "@mui/material/Backdrop";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Card from "@mui/material/Card";
+import Modal from "@mui/material/Modal";
+import IconButton from "@mui/material/IconButton";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 
-export default function Analytics(state) {
+export default function Analytics({ instance, token }) {
+  const [gaAuthenticated, setGaAuthenticated] = useState(true); // we need check if the google profile id is available
+  const [gaLegacyAuth, setGaLegacyAuth] = useState(false); // we need response body from cloud function could change this
+  const [googleProfileId, setGoogleProfileId] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [domainList, setDomainList] = useState([]);
+  const [selectedDomain, setSelectedDomain] = useState("No Selected Domain");
+  const ZestyAPI = new window.Zesty.FetchWrapper(instance.ZUID, token, {
+    authAPIURL: `${process.env.REACT_APP_AUTH_API}`,
+    instancesAPIURL: `${process.env.REACT_APP_INSTANCE_API}`,
+    accountsAPIURL: `${process.env.REACT_APP_ACCOUNTS_API}`,
+    mediaAPIURL: `${process.env.REACT_APP_MEDIA_API}`,
+    sitesServiceURL: `${process.env.REACT_APP_SITES_SERVICE}`,
+  });
+  const [googleProfile, setGoogleProfile] = useState(null);
+  const [googleUrchinId, setGoogleUrchinId] = useState(null);
 
-  const [recentlyEditedItems, setRecentlyEditedItems] = useState([])
-  const [favoriteModels, setFavoriteModels] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [webEngineOn, setWebEngineOn] = useState(true)
-  const [gaAuthenticated, setGaAuthenticated] = useState(Boolean(state.instance.google_profile_id))
-  const [gaLegacyAuth, setGaLegacyAuth] = useState(false)
-  const [domainSet, setDomainSet] = useState(Boolean(
-    state.instance.domains &&
-    state.instance.domains[0] &&
-    state.instance.domains[0].domain
-  ))
+  useEffect(async () => {
+    const user = await ZestyAPI.verify();
+    if (user.data === null) return setGaAuthenticated(false);
+    setUserId(user.data);
 
-    useEffect(()=> {
-     
-      if (state.instance.google_profile_id) {
-        const start = moment().subtract(120, "days").format("YYYY-MM-DD");
-        fetchRecentItems(state.instance.user.ZUID, state.instance.ZUID, start)
-          .then((res) => {
-            if (res && res.data) {
-              setRecentlyEditedItems(getLastEditedItems(res.data))
-              setFavoriteModels(getFavoriteModels(res.data))
-              setLoading(false)
-            } else {
-              setLoading(false)
-            }
-          });
-       }
-    }, [])
+    const responseDomain = await getGaDomain();
+    if (!responseDomain.ok) return setGaLegacyAuth(true);
+    const domains = await responseDomain.json();
+    console.log(domains);
+    setDomainList(domains.items);
 
-    const fetchRecentItems = (userZUID, instanceZUID, start) => {
-      return request(
-        `https://${instanceZUID + process.env.REACT_APP_API_INSTANCE}search/items?q=${userZUID}&order=created&dir=DESC&start_date=${start}`
-      )
-    }
+    const settings = await ZestyAPI.getSettings();
+    if (Object.keys(settings.data).length === 0)
+      return setGaAuthenticated(false);
 
-    const setGALegacyStatus = (status) => {
-      setGaLegacyAuth(status)
-    };
-    /**
-      Group items by model
-      [
-        [contentModelZUID, [item, item, ...]]
-      ]
-    **/
-    const getFavoriteModels = (items) => {
-      const grouped = items.reduce((acc, item) => {
-        if (acc[item.meta.contentModelZUID]) {
-          acc[item.meta.contentModelZUID].push(item);
-        } else {
-          acc[item.meta.contentModelZUID] = [item];
-        }
-        return acc;
-      }, {});
+    const gaProfile = settings.data.find(
+      (setting) => setting.key === "google_profile_id"
+    );
+    setGoogleProfile(gaProfile);
 
-      const sorted = Object.keys(grouped)
-        .filter((item) => grouped[item][0].web.metaTitle)
-        .map((contentModelZUID) => {
-          return [contentModelZUID, grouped[contentModelZUID].slice(0, 3)];
-        })
-        .sort((a, b) => {
-          if (a[1].length < b[1].length) {
-            return 1;
-          }
-          if (a[1].length > b[1].length) {
-            return -1;
-          }
-          return 0;
-        });
+    const urchinId = settings.data.find(
+      (setting) => setting.key === "google_urchin_id"
+    );
+    setGoogleUrchinId(urchinId);
 
-      // Top three most edited models
-      return sorted.slice(0, 3);
-    }
-
-    const getLastEditedItems = (items) => {
-      return [...items]
-        .sort((a, b) => {
-          if (a.meta.updatedAt < b.meta.updatedAt) {
-            return 1;
-          }
-          if (a.meta.updatedAt > b.meta.updatedAt) {
-            return -1;
-          }
-          return 0;
-        })
-        .slice(0, 5);
-    }
-
-      return (
-        <section className={styles.Dashboard}>
-          <div className={styles.container}>
-            <div
-              className={cx(
-                styles.columns,
-                styles.graphs,
-                styles.analyticsContainer
-              )}
-            >
-              {(!gaAuthenticated || gaLegacyAuth) && (
-                <GoogleAuthOverlay
-                  gaLegacyAuth={gaLegacyAuth}
-                  domainSet={domainSet}
-                  gaAuthenticated={gaAuthenticated}
-                  user={state.instance.user}
-                  instance={state.instance}
-                />
-              )}
-              {/* TODO add Google Auth Modal here */}
-              <div className={cx(styles.column, styles.primary)}>
-                <PageviewTraffic
-                  setGALegacyStatus={setGALegacyStatus}
-                  instanceZUID={state.instance.ZUID}
-                  profileID={state.instance.google_profile_id}
-                  data={shelldata.shellBarData()}
-                  domainSet={domainSet}
-                />
-              </div>
-
-              <div className={styles.column}>
-                <InboundTraffic
-                  setGALegacyStatus={setGALegacyStatus}
-                  instanceZUID={state.instance.ZUID}
-                  profileID={state.instance.google_profile_id}
-                  data={shelldata.shellDoughnutData()}
-                  domainSet={domainSet}
-                />
-                <SocialTraffic
-                  setGALegacyStatus={setGALegacyStatus}
-                  instanceZUID={state.instance.ZUID}
-                  profileID={state.instance.google_profile_id}
-                  data={shelldata.shellDoughnutData()}
-                  domainSet={domainSet}
-                />
-              </div>
-            </div>
-
-            <div className={styles.columns}>
-              {/*<div className={styles.column}>
-              <ContentVelocity />
-            </div>*/}
-              <div className={cx(styles.column)}>
-                <RecentlyEdited
-                  items={recentlyEditedItems}
-                  loading={loading}
-                />
-              </div>
-              <div className={cx(styles.column, styles.recent)}>
-                <TopPerforming
-                  instanceZUID={state.instance.ZUID}
-                  profileID={state.instance.google_profile_id}
-                />
-              </div>
-            </div>
-          </div>
-        </section>
+    if (
+      gaProfile &&
+      urchinId &&
+      gaProfile.value !== "" &&
+      urchinId.value !== ""
+    ) {
+      const selectDomain = domains.items.find(
+        (domain) => domain.defaultProfileId === gaProfile.value
       );
-  }
+      if (selectDomain) {
+        setGoogleProfileId(selectDomain.defaultProfileId);
+        setSelectedDomain(selectDomain.name);
+        setGaAuthenticated(true);
+      } else {
+        setShowModal(true);
+      }
+    } else {
+      setShowModal(true);
+    }
+  }, []);
+
+  const getGaDomain = () => {
+    return fetch(
+      `${process.env.REACT_APP_SERVICE_GOOGLE_DOMAINS}?zuid=${instance.ZUID}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  };
+
+  const changeDomainSelection = async (domain) => {
+    setGoogleProfileId(domain.defaultProfileId);
+    setSelectedDomain(domain.name);
+    setShowModal(false);
+
+    googleProfile["value"] = domain.defaultProfileId;
+    googleUrchinId["value"] = domain.id;
+
+    await ZestyAPI.updateSetting(googleProfile.ZUID, googleProfile);
+    await ZestyAPI.updateSetting(googleUrchinId.ZUID, googleUrchinId);
+  };
+
+  return (
+    <>
+      {/* Googgle Authentication Modal */}
+      <Backdrop
+        sx={{
+          color: "#fff",
+          zIndex: 20,
+        }}
+        open={!gaAuthenticated || gaLegacyAuth}
+        onClick={() => {}}
+      >
+        <GoogleAuthOverlay
+          gaLegacyAuth={gaLegacyAuth}
+          gaAuthenticated={gaAuthenticated}
+          user={userId}
+          instance={instance}
+        />
+      </Backdrop>
+      {/* Domain Selection Modal */}
+      <Modal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Card
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            padding: 4,
+          }}
+        >
+          <Box
+            sx={{
+              paddingBottom: 4,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Box sx={{ flexGrow: 1 }}>
+              <Typography sx={{ fontWeight: 600, fontSize: "14pt" }}>
+                Choose from domain list
+              </Typography>
+            </Box>
+            <Box>
+              <IconButton
+                color="secondary"
+                aria-label="upload picture"
+                component="button"
+                onClick={() => setShowModal(false)}
+              >
+                <CloseRoundedIcon />
+              </IconButton>
+            </Box>
+          </Box>
+          <GaTable
+            domains={domainList}
+            selectedDomain={selectedDomain}
+            onCellClick={changeDomainSelection}
+          />
+        </Card>
+      </Modal>
+      <Box p={4}>
+        <Box
+          sx={{
+            display: "flex",
+            paddingBottom: "0px",
+            alignItems: "center",
+            paddingBottom: 4,
+          }}
+        >
+          <Box sx={{ flexGrow: 1 }}>
+            <Typography
+              variant="h2"
+              sx={{
+                fontWeight: "600",
+                fontSize: "16pt",
+                color: "#5b667d",
+              }}
+            >
+              {selectedDomain}
+            </Typography>
+          </Box>
+          <Box>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => setShowModal(true)}
+            >
+              Select Domain
+            </Button>
+          </Box>
+        </Box>
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={7} lg={7}>
+            <PageviewTraffic
+              setGALegacyStatus={setGaLegacyAuth}
+              instanceZUID={instance.ZUID}
+              profileID={googleProfileId}
+              data={shelldata.shellBarData}
+            />
+          </Grid>
+          <Grid item xs={12} md={5} lg={5}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <Box
+                sx={{
+                  marginBottom: 4,
+                }}
+              >
+                <InboundTraffic
+                  setGALegacyStatus={setGaLegacyAuth}
+                  instanceZUID={instance.ZUID}
+                  profileID={googleProfileId}
+                  data={shelldata.shellDoughnutData}
+                />
+              </Box>
+              <Box>
+                <SocialTraffic
+                  setGALegacyStatus={setGaLegacyAuth}
+                  instanceZUID={instance.ZUID}
+                  profileID={googleProfileId}
+                  data={shelldata.shellDoughnutData}
+                />
+              </Box>
+            </Box>
+          </Grid>
+          <Grid item xs={12}>
+            <TopPerforming
+              instanceZUID={instance.ZUID}
+              profileID={googleProfileId}
+            />
+          </Grid>
+        </Grid>
+      </Box>
+    </>
+  );
+}
 // );

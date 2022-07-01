@@ -5,18 +5,13 @@ import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import styles from "./RecentlyEdited.less";
+import GraphContainer from "../GraphContainer";
 
 export const RecentlyEdited = ({items, loading}) => {
 
   return (
-    <Card className={styles.Card}>
-      <CardHeader>
-        <h2>
-          <FontAwesomeIcon icon={faClock} /> Recent Instance Edits
-        </h2>
-      </CardHeader>
-      <CardContent>
-        <WithLoader
+    <GraphContainer title="Recent Instance Edits">
+      <WithLoader
           condition={!loading}
           message="Loading Recent Items"
         >
@@ -37,8 +32,8 @@ export const RecentlyEdited = ({items, loading}) => {
             "No recently edited items"
           )}
         </WithLoader>
-      </CardContent>
-    </Card>
+    </GraphContainer>
+    
   )
 
 }
