@@ -34,9 +34,7 @@ export const GoogleAuthOverlay = ({ gaLegacyAuth, gaAuthenticated, user, instanc
         "?user_id=" +
         user +
         "&account_id=" +
-        instance.ID +
-        "&domain=" +
-        instance.domains[0].domain
+        instance.ID 
     );
 
     var win = window.open(
