@@ -23,7 +23,7 @@ export default function Analytics({ instance, token }) {
   const [userId, setUserId] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [domainList, setDomainList] = useState([]);
-  const [selectedDomain, setSelectedDomain] = useState("No Selected Domain");
+  const [selectedDomain, setSelectedDomain] = useState("Loading Charts...");
   const ZestyAPI = new window.Zesty.FetchWrapper(instance.ZUID, token, {
     authAPIURL: `${process.env.REACT_APP_AUTH_API}`,
     instancesAPIURL: `${process.env.REACT_APP_INSTANCE_API}`,
@@ -73,6 +73,7 @@ export default function Analytics({ instance, token }) {
         setSelectedDomain(selectDomain.name);
         setGaAuthenticated(true);
       } else {
+        setSelectedDomain("No Domain Selected")
         setShowModal(true);
       }
     } else {
