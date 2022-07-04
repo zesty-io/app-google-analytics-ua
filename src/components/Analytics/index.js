@@ -24,6 +24,7 @@ export default function Analytics({ instance, token }) {
   const [showModal, setShowModal] = useState(false);
   const [domainList, setDomainList] = useState([]);
   const [selectedDomain, setSelectedDomain] = useState("Loading Charts...");
+  const [selectedUrl, setSelectedUrl] = useState("Loading Url...");
   const ZestyAPI = new window.Zesty.FetchWrapper(instance.ZUID, token, {
     authAPIURL: `${process.env.REACT_APP_AUTH_API}`,
     instancesAPIURL: `${process.env.REACT_APP_INSTANCE_API}`,
@@ -70,10 +71,12 @@ export default function Analytics({ instance, token }) {
       );
       if (selectDomain) {
         setGoogleProfileId(selectDomain.defaultProfileId);
+        setSelectedUrl(selectDomain.websiteUrl)
         setSelectedDomain(selectDomain.name);
         setGaAuthenticated(true);
       } else {
         setSelectedDomain("No Domain Selected")
+        setSelectedUrl("")
         setShowModal(true);
       }
     } else {
@@ -96,6 +99,7 @@ export default function Analytics({ instance, token }) {
   const changeDomainSelection = async (domain) => {
     setGoogleProfileId(domain.defaultProfileId);
     setSelectedDomain(domain.name);
+    setSelectedUrl(domain.websiteUrl)
     setShowModal(false);
 
     googleProfile["value"] = domain.defaultProfileId;
@@ -198,6 +202,16 @@ export default function Analytics({ instance, token }) {
               }}
             >
               {selectedDomain}
+            </Typography>
+            <Typography
+              variant="h2"
+              sx={{
+                fontWeight: "200",
+                fontSize: "12pt",
+                color: "#5b667d",
+              }}
+            >
+              {selectedUrl}
             </Typography>
           </Box>
           <Box>
