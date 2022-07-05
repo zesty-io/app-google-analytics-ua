@@ -23,7 +23,8 @@ export default function Analytics({ instance, token }) {
   const [userId, setUserId] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [domainList, setDomainList] = useState([]);
-  const [selectedDomain, setSelectedDomain] = useState("No Selected Domain");
+  const [selectedDomain, setSelectedDomain] = useState("Loading Charts...");
+  const [selectedUrl, setSelectedUrl] = useState("Loading Url...");
   const ZestyAPI = new window.Zesty.FetchWrapper(instance.ZUID, token, {
     authAPIURL: `${process.env.REACT_APP_AUTH_API}`,
     instancesAPIURL: `${process.env.REACT_APP_INSTANCE_API}`,
@@ -70,9 +71,12 @@ export default function Analytics({ instance, token }) {
       );
       if (selectDomain) {
         setGoogleProfileId(selectDomain.defaultProfileId);
+        setSelectedUrl(selectDomain.websiteUrl)
         setSelectedDomain(selectDomain.name);
         setGaAuthenticated(true);
       } else {
+        setSelectedDomain("No Domain Selected")
+        setSelectedUrl("")
         setShowModal(true);
       }
     } else {
@@ -95,6 +99,7 @@ export default function Analytics({ instance, token }) {
   const changeDomainSelection = async (domain) => {
     setGoogleProfileId(domain.defaultProfileId);
     setSelectedDomain(domain.name);
+    setSelectedUrl(domain.websiteUrl)
     setShowModal(false);
 
     googleProfile["value"] = domain.defaultProfileId;
@@ -142,13 +147,21 @@ export default function Analytics({ instance, token }) {
             sx={{
               paddingBottom: 4,
               display: "flex",
-              alignItems: "center",
               justifyContent: "center",
             }}
           >
-            <Box sx={{ flexGrow: 1 }}>
+            <Box sx={{ 
+                flexGrow: 1,
+                paddingRight : 4 }}>
               <Typography sx={{ fontWeight: 600, fontSize: "14pt" }}>
                 Choose from domain list
+              </Typography>
+              <Typography
+                sx={{
+                  fontWeight : 300,
+                  fontSize: "12pt"
+                }}>
+                  Choosing a domain will update your google profile id, google accounts id, and google urchin id (legacy). This change updates production when your cache is refreshed
               </Typography>
             </Box>
             <Box>
@@ -162,6 +175,7 @@ export default function Analytics({ instance, token }) {
               </IconButton>
             </Box>
           </Box>
+         
           <GaTable
             domains={domainList}
             selectedDomain={selectedDomain}
@@ -189,6 +203,16 @@ export default function Analytics({ instance, token }) {
             >
               {selectedDomain}
             </Typography>
+            <Typography
+              variant="h2"
+              sx={{
+                fontWeight: "200",
+                fontSize: "12pt",
+                color: "#5b667d",
+              }}
+            >
+              {selectedUrl}
+            </Typography>
           </Box>
           <Box>
             <Button
@@ -196,7 +220,7 @@ export default function Analytics({ instance, token }) {
               color="secondary"
               onClick={() => setShowModal(true)}
             >
-              Select Domain
+              {googleProfileId ? 'Change' : 'Select'} Domain
             </Button>
           </Box>
         </Box>
