@@ -4,7 +4,6 @@ import { faClock } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { WithLoader } from "@zesty-io/core/WithLoader";
-import styles from "./RecentlyEdited.less";
 import GraphContainer from "../GraphContainer";
 
 export const RecentlyEdited = ({items, loading}) => {
