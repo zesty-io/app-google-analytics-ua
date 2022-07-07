@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
-import { PageviewTraffic, InboundTraffic, SocialTraffic, TopPerforming } from './graph'
+import { PageviewTraffic, InboundTraffic, SocialTraffic, TopPerforming, shelldata } from './graph'
 import { GoogleAuthOverlay } from "../ui/AuthOverlay";
 import { GaTable } from "../ui/Table/GaTable";
-import shelldata from "./graph/shelldata";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Backdrop from "@mui/material/Backdrop";
@@ -40,7 +39,6 @@ export default function Analytics({ instance, token }) {
     const responseDomain = await getGaDomain();
     if (!responseDomain.ok) return setGaLegacyAuth(true);
     const domains = await responseDomain.json();
-    console.log(domains);
     setDomainList(domains.items);
 
     const settings = await ZestyAPI.getSettings();
