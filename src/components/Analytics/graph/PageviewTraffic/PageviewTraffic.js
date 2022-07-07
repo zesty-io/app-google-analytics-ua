@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Line } from "react-chartjs-2";
 import BarChartOutlinedIcon from '@mui/icons-material/BarChartOutlined';
-import GraphContainer from '../GraphContainer';
+import GraphContainer from '../../../ui/GraphContainer';
 
 
 export const PageviewTraffic = ({ setGALegacyStatus, instanceZUID, profileID, data, domainSet }) => {

@@ -1,3 +1,3 @@
-import Analytics from "./Analytics";
+import Analytics from "./analytics";
 
 export default Analytics;

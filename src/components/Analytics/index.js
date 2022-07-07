@@ -1,11 +1,8 @@
 import { useState, useEffect } from "react";
-import { PageviewTraffic } from "./components/PageviewTraffic";
-import { InboundTraffic } from "./components/InboundTraffic";
-import { SocialTraffic } from "./components/SocialTraffic";
-import { TopPerforming } from "./components/TopPerforming";
-import { GoogleAuthOverlay } from "./components/GoogleAuthOverlay";
-import { GaTable } from "../Table/GaTable";
-import shelldata from "./shelldata";
+import { PageviewTraffic, InboundTraffic, SocialTraffic, TopPerforming } from './graph'
+import { GoogleAuthOverlay } from "../ui/AuthOverlay";
+import { GaTable } from "../ui/Table/GaTable";
+import shelldata from "./graph/shelldata";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Backdrop from "@mui/material/Backdrop";

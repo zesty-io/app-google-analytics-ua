@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { WithLoader } from "@zesty-io/core/WithLoader";
-import GraphContainer from '../GraphContainer'; 
+import GraphContainer from '../../../ui/GraphContainer'; 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -41,8 +41,6 @@ export function TopPerforming({ profileID, instanceZUID }) {
       setLoading(false)
     }
   }, [profileID])
-
- 
 
   const getTopTenContent = () => {
     return fetch(

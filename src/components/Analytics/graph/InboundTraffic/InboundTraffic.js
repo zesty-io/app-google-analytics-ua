@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react' 
 import { Doughnut } from "react-chartjs-2";
-import GraphContainer from '../GraphContainer';
+import GraphContainer from '../../../ui/GraphContainer';
 
 export const InboundTraffic = ({ data, setGALegacyStatus, instanceZUID, profileID}) => {
 
