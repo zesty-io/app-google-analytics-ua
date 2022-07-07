@@ -47,6 +47,18 @@ Deployment happens with gcloud cli and gsutils. Install gcloud to run the deploy
 ### How to deploy in production
 
 -  check package.json and run `npm run deploy-prod`
+-  go to this bucket `apps.zesty.io https://console.cloud.google.com/storage/browser/apps.zesty.io;tab=objects?project=zesty-prod` and see if the files has been transferred.
+
+
+
+# Deployment Scripts for Application
+
+Once permissions are set on buckets, the package.json should include these scripts. Replace APP_NAME with a simple short name of your app.
+
+-   "deploy-stage" : "gsutil cp -r ./build/* gs://apps.stage.zesty.io/APP_NAME/"
+-   "deploy-prod" : "gsutil cp -r ./build/* gs://apps.zesty.io/APP_NAME/"
+-   "deploy-dev" : "gsutil cp -r ./build/* gs://apps.dev.zesty.io/APP_NAME/"
+
 
 # Getting Started with Create React App
 
