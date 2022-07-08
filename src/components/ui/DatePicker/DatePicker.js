@@ -9,20 +9,20 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select'
 import TextField from '@mui/material/TextField'
 import moment from 'moment'
+import { useDateRange, useDateRangeUpdate } from '../../../context/DateRangeContext'
 
 export function CustomDatePicker(){
 
+    const dateRange = useDateRange()
+    const dateRangeUpdate = useDateRangeUpdate()
+
     const [anchorEl, setAnchorEl ] = useState(null);
-    const [selected, setSelected] = useState('Custom')
-    const [dateRange, setDateRange] = useState({
-        startDate : "",
-        endDate : ""
-    })
     const open = Boolean(anchorEl)
     const id = open ? 'simple-popover' : undefined;
 
     useEffect(() => {
-        setDateRange({
+        dateRangeUpdate({
+            selectedItem : "Custom",
             startDate : moment().subtract(30, "days").startOf("month").format("YYYY-MM-DD"),
             endDate : moment().format("YYYY-MM-DD"),
         })
@@ -35,55 +35,54 @@ export function CustomDatePicker(){
     const handleSelect = (event) => {   
 
         const selectedItem = event.target.value
-        setSelected(selectedItem)
         if(selectedItem === "Today"){
-            setDateRange({
+            dateRangeUpdate({
+                selectedItem : "Today",
                 startDate : moment().format("YYYY-MM-DD"),
                 endDate : moment().format("YYYY-MM-DD")
             })
         }
 
         if(selectedItem === "Yesterday"){
-            setDateRange({
+            dateRangeUpdate({
+                selectedItem : "Yesterday",
                 startDate : moment().subtract(1, "days").format("YYYY-MM-DD"),
                 endDate : moment().format("YYYY-MM-DD")
             })
         }
 
         if(selectedItem === "Last Week"){
-            setDateRange({
+            dateRangeUpdate({
+                selectedItem : "Last Week",
                 startDate : moment().subtract(1, "weeks").startOf("week").format("YYYY-MM-DD"),
                 endDate : moment().subtract(1, "weeks").endOf("week").format("YYYY-MM-DD"),
             })
         }
 
         if(selectedItem === "Last Month"){
-            setDateRange({
+            dateRangeUpdate({
+                selectedItem : "Last Month",
                 startDate : moment().subtract(1, "months").startOf("month").format("YYYY-MM-DD"),
                 endDate : moment().subtract(1, "months").endOf("month").format("YYYY-MM-DD"),
             })
         }
 
         if(selectedItem === "Last 7 Days"){
-            setDateRange({
+            dateRangeUpdate({
+                selectedItem : "Last 7 Days",
                 startDate : moment().subtract(7, "days").startOf("month").format("YYYY-MM-DD"),
                 endDate : moment().format("YYYY-MM-DD"),
             })
         }
 
         if(selectedItem === "Last 30 Days"){
-            setDateRange({
+            dateRangeUpdate({
+                selectedItem : "Last 30 Days",
                 startDate : moment().subtract(30, "days").startOf("month").format("YYYY-MM-DD"),
                 endDate : moment().format("YYYY-MM-DD"),
             })
         }
     }
-
-    useEffect(() => {
-        console.log(dateRange)
-    }, [dateRange])
-
-
 
     return (
         <>
@@ -112,7 +111,7 @@ export function CustomDatePicker(){
                         <Select
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
-                            value={selected}
+                            value={dateRange.selectedItem}
                             label="Date Range"
                             onChange={handleSelect}
                         >
@@ -125,7 +124,7 @@ export function CustomDatePicker(){
                             <MenuItem value="Last 30 Days">Last 30 Days</MenuItem>
                         </Select>
                     </FormControl>
-                    { selected === "Custom" && (
+                    { dateRange.selectedItem === "Custom" && (
                         <>
                             <TextField
                                 name="startDate"
@@ -133,9 +132,6 @@ export function CustomDatePicker(){
                                 InputLabelProps={{ shrink: true, required: true }}
                                 type="date"
                                 defaultValue={dateRange.startDate}
-                                onChange={() => {
-                                    setSelected("Custom")
-                                }}
                             />
                             <TextField
                                 name="endDate"
@@ -143,9 +139,6 @@ export function CustomDatePicker(){
                                 InputLabelProps={{ shrink: true, required: true }}
                                 type="date"
                                 defaultValue={dateRange.endDate}
-                                onChange={(event) => {
-                                    setSelected("Custom")
-                                }}
                             />
                         </>
                     ) }
