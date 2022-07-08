@@ -39,6 +39,12 @@ For more info : https://developers.google.com/analytics/devguides/reporting/core
 
 Deployment happens with gcloud cli and gsutils. Install gcloud to run the deployment command. https://cloud.google.com/sdk/docs/install
 
+
+### Using AppLoader in App.js
+
+-   On development, you should pass `token` and `instance` on AppLoader.
+-   During deployment and build, you dont need to pass `token` and `instance` on AppLoader. The parent container will automatically pass the data.
+
 ### Build the app with production variables
 
 -   Make production environment variables by adding `.env.production`. use variables from `env.example`
