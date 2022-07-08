@@ -6,7 +6,7 @@ function App() {
 	return (
 		<AppLoader
 			token={process.env.REACT_APP_TOKEN}
-			instance={{ZUID: `${process.env.REACT_APP_ZUID}`, ID : 8355630}}>
+			instance={{ZUID: `${process.env.REACT_APP_ZUID}`, ID : 8355121}}>
 			<Analytics />
 		</AppLoader>
 	);

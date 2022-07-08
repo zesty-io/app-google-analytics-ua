@@ -1,13 +1,10 @@
 import { useState, useEffect } from 'react'
-import { WithLoader } from "@zesty-io/core/WithLoader";
 import GraphContainer from '../../../ui/GraphContainer'; 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Box from '@mui/material/Box'
-import CircularProgress from '@mui/material/CircularProgress';
 
 
 export function TopPerforming({ profileID, instanceZUID }) {
