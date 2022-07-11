@@ -20,14 +20,6 @@ export function CustomDatePicker(){
     const open = Boolean(anchorEl)
     const id = open ? 'simple-popover' : undefined;
 
-    useEffect(() => {
-        dateRangeUpdate({
-            selectedItem : "Custom",
-            startDate : moment().subtract(30, "days").startOf("month").format("YYYY-MM-DD"),
-            endDate : moment().format("YYYY-MM-DD"),
-        })
-    }, [])
-
     const handleClick = (event) => setAnchorEl(event.currentTarget);
 
     const handleClose = () => setAnchorEl(null);
@@ -82,6 +74,28 @@ export function CustomDatePicker(){
                 endDate : moment().format("YYYY-MM-DD"),
             })
         }
+
+        if(selectedItem === "Custom"){
+            dateRangeUpdate({
+                selectedItem : "Custom",
+                startDate : moment().format("YYYY-MM-DD"),
+                endDate : moment().format("YYYY-MM-DD"),
+            })
+        }
+    }
+
+    const onStartDateChange = (event) => {
+        dateRangeUpdate({
+            ...dateRange, 
+            startDate : event.target.value
+        })
+    }
+
+    const onEndDateChange = (event) => {
+        dateRangeUpdate({
+            ...dateRange, 
+            endDate : event.target.value
+        })
     }
 
     return (
@@ -132,6 +146,11 @@ export function CustomDatePicker(){
                                 InputLabelProps={{ shrink: true, required: true }}
                                 type="date"
                                 defaultValue={dateRange.startDate}
+                                onChange={onStartDateChange}
+                                inputProps={{
+                                    max : dateRange.endDate,
+                                    required : true
+                                }}
                             />
                             <TextField
                                 name="endDate"
@@ -139,11 +158,16 @@ export function CustomDatePicker(){
                                 InputLabelProps={{ shrink: true, required: true }}
                                 type="date"
                                 defaultValue={dateRange.endDate}
+                                onChange={onEndDateChange}
+                                inputProps={{
+                                    min:dateRange.startDate,
+                                    required : true
+                                }}
+                                
                             />
                         </>
                     ) }
                     
-                    <Button variant="contained">Set Date Range</Button>
             </Box>
             </Popover>
         </>

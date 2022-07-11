@@ -16,9 +16,9 @@ export function useDateRangeUpdate(){
 export function DateRangeProvider({ children }){
 
     const [dateRange, setDateRange] = useState({
-        selectedItem : "Custom",
-        startDate : "",
-        endDate : ""
+        selectedItem : "Last 30 Days",
+        startDate : "30daysAgo",
+        endDate : "today"
     })
 
     const updateDateRange = (date) => setDateRange(date)

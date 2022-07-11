@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { Line } from "react-chartjs-2";
 import BarChartOutlinedIcon from '@mui/icons-material/BarChartOutlined';
 import GraphContainer from '../../../ui/GraphContainer';
-
+import { useDateRange } from '../../../../context/DateRangeContext';
 
 export const PageviewTraffic = ({ setGALegacyStatus, instanceZUID, profileID, data, domainSet }) => {
+    
+    const dateRange = useDateRange()
 
     const [chartData, setChartData] = useState(data)
     const [loading, setLoading] = useState(false)
@@ -21,7 +23,7 @@ export const PageviewTraffic = ({ setGALegacyStatus, instanceZUID, profileID, da
         setLoading(false)
       }
 
-    }, [profileID])
+    }, [profileID, dateRange])
 
     const getBarChartData = () => {
 
@@ -38,8 +40,8 @@ export const PageviewTraffic = ({ setGALegacyStatus, instanceZUID, profileID, da
                   viewId: profileID,
                   dateRanges: [
                     {
-                      startDate: "14daysAgo",
-                      endDate: "today",
+                      startDate: dateRange.startDate,
+                      endDate: dateRange.endDate,
                     },
                   ],
                   metrics: [
@@ -72,7 +74,7 @@ export const PageviewTraffic = ({ setGALegacyStatus, instanceZUID, profileID, da
 
     return (
       
-      <GraphContainer title="Pageview Traffic" subTitle="Last 14 Days" loading={loading}>
+      <GraphContainer title="Pageview Traffic" subTitle={dateRange.selectedItem === "Custom" ? dateRange.startDate + " to " + dateRange.endDate : dateRange.selectedItem} loading={loading}>
           <Line
             data={chartData}
             // width={500}

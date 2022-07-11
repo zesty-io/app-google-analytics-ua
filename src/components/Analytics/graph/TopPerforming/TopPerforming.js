@@ -5,10 +5,12 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import { useDateRange } from '../../../../context/DateRangeContext';
 
 
 export function TopPerforming({ profileID, instanceZUID }) {
 
+  const dateRange = useDateRange()  
   const [headers, setHeaders] = useState([])
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(false)
@@ -37,7 +39,7 @@ export function TopPerforming({ profileID, instanceZUID }) {
       setData(truncatedData)
       setLoading(false)
     }
-  }, [profileID])
+  }, [profileID, dateRange])
 
   const getTopTenContent = () => {
     return fetch(
@@ -52,7 +54,7 @@ export function TopPerforming({ profileID, instanceZUID }) {
             reportRequests: [
               {
                 viewId: profileID,
-                dateRanges: [{ startDate: "14daysAgo", endDate: "today" }],
+                dateRanges: [{ startDate: dateRange.startDate, endDate: dateRange.endDate }],
                 metrics: [
                   { expression: "ga:sessions" },
                   { expression: "ga:avgSessionDuration" },
@@ -77,7 +79,7 @@ export function TopPerforming({ profileID, instanceZUID }) {
 
     return (
 
-      <GraphContainer title="Top Performing Content" loading={loading}>
+      <GraphContainer title="Top Performing Content" loading={loading}  subTitle={dateRange.selectedItem === "Custom" ? dateRange.startDate + " to " + dateRange.endDate : dateRange.selectedItem}>
         
           {headers.length && data.length ? (
               
