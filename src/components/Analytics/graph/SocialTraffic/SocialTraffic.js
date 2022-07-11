@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { Doughnut } from "react-chartjs-2";
-import GraphContainer from '../GraphContainer';
+import GraphContainer from '../../../ui/GraphContainer';
+import { useDateRange } from '../../../../context/DateRangeContext';
 
-export const SocialTraffic = ({ setGALegacyStatus, instanceZUID, profileID, data, domainSet }) => {
+export const SocialTraffic = ({ setGALegacyStatus, instanceZUID, profileID, data }) => {
 
+  const dateRange = useDateRange()
   const [chartData, setChartData] = useState(data)
   const [loading, setLoading] = useState(false)
 
@@ -18,7 +20,7 @@ export const SocialTraffic = ({ setGALegacyStatus, instanceZUID, profileID, data
       setLoading(false)
     }
 
-  }, [profileID])
+  }, [profileID, dateRange])
 
   const getSocialTraffic = () => {
     return fetch(
@@ -34,7 +36,7 @@ export const SocialTraffic = ({ setGALegacyStatus, instanceZUID, profileID, data
             reportRequests: [
               {
                 viewId: profileID,
-                dateRanges: [{ startDate: "14daysAgo", endDate: "today" }],
+                dateRanges: [{ startDate: dateRange.startDate, endDate: dateRange.endDate }],
                 metrics: [{ expression: "ga:sessions" }],
                 dimensions: [{ name: "ga:socialNetwork" }],
                 dimensionFilterClauses: [
@@ -58,7 +60,7 @@ export const SocialTraffic = ({ setGALegacyStatus, instanceZUID, profileID, data
   }
 
   return (
-    <GraphContainer title="Social Traffic" subTitle="Last 14 Days" loading={loading}>
+    <GraphContainer title="Social Traffic" subTitle={dateRange.selectedItem === "Custom" ? dateRange.startDate + " to " + dateRange.endDate : dateRange.selectedItem} loading={loading}>
         <Doughnut
           data={chartData}
           // width={250}

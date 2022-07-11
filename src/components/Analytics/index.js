@@ -1,11 +1,7 @@
 import { useState, useEffect } from "react";
-import { PageviewTraffic } from "./components/PageviewTraffic";
-import { InboundTraffic } from "./components/InboundTraffic";
-import { SocialTraffic } from "./components/SocialTraffic";
-import { TopPerforming } from "./components/TopPerforming";
-import { GoogleAuthOverlay } from "./components/GoogleAuthOverlay";
-import { GaTable } from "../Table/GaTable";
-import shelldata from "./shelldata";
+import { PageviewTraffic, InboundTraffic, SocialTraffic, TopPerforming, shelldata } from './graph'
+import { GoogleAuthOverlay } from "../ui/AuthOverlay";
+import { GaTable } from "../ui/Table/GaTable";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Backdrop from "@mui/material/Backdrop";
@@ -15,6 +11,7 @@ import Card from "@mui/material/Card";
 import Modal from "@mui/material/Modal";
 import IconButton from "@mui/material/IconButton";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import { CustomDatePicker } from "../ui/DatePicker/DatePicker";
 
 export default function Analytics({ instance, token }) {
   const [gaAuthenticated, setGaAuthenticated] = useState(true); // we need check if the google profile id is available
@@ -43,7 +40,6 @@ export default function Analytics({ instance, token }) {
     const responseDomain = await getGaDomain();
     if (!responseDomain.ok) return setGaLegacyAuth(true);
     const domains = await responseDomain.json();
-    console.log(domains);
     setDomainList(domains.items);
 
     const settings = await ZestyAPI.getSettings();
@@ -214,7 +210,12 @@ export default function Analytics({ instance, token }) {
               {selectedUrl}
             </Typography>
           </Box>
-          <Box>
+          <Box
+            sx={{
+              display : "flex",
+              gap : 2
+            }}>
+            <CustomDatePicker />
             <Button
               variant="contained"
               color="secondary"
