@@ -1,9 +1,11 @@
 import React, {useEffect, useState} from 'react' 
 import { Doughnut } from "react-chartjs-2";
 import GraphContainer from '../../../ui/GraphContainer';
+import { useDateRange } from '../../../../context/DateRangeContext';
 
 export const InboundTraffic = ({ data, setGALegacyStatus, instanceZUID, profileID}) => {
 
+    const dateRange = useDateRange()
     const [chartData, setChartData] = useState(data)
     const [loading, setLoading] = useState(false)
     useEffect(async () => {
@@ -18,7 +20,7 @@ export const InboundTraffic = ({ data, setGALegacyStatus, instanceZUID, profileI
         setChartData(data.chartJSData)
         setLoading(false)
       }
-    }, [profileID])
+    }, [profileID, dateRange])
 
     const getInboundTraffic = () => {
       return fetch(
@@ -34,7 +36,7 @@ export const InboundTraffic = ({ data, setGALegacyStatus, instanceZUID, profileI
               reportRequests: [
                 {
                   viewId: profileID,
-                  dateRanges: [{ startDate: "14daysAgo", endDate: "yesterday" }],
+                  dateRanges: [{ startDate: dateRange.startDate, endDate: dateRange.endDate }],
                   metrics: [{ expression: "ga:sessions" }],
                   dimensions: [{ name: "ga:medium" }],
                   dimensionFilterClauses: [
@@ -58,7 +60,7 @@ export const InboundTraffic = ({ data, setGALegacyStatus, instanceZUID, profileI
     }
 
     return (
-      <GraphContainer title="Inbound Traffic" subTitle="Last 14 Days" loading={loading}>
+      <GraphContainer title="Inbound Traffic" subTitle={dateRange.selectedItem === "Custom" ? dateRange.startDate + " to " + dateRange.endDate : dateRange.selectedItem} loading={loading}>
         <Doughnut
             data={chartData}
             // width={250}
