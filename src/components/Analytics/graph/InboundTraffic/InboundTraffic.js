@@ -2,23 +2,36 @@ import React, {useEffect, useState} from 'react'
 import { Doughnut } from "react-chartjs-2";
 import GraphContainer from '../../../ui/GraphContainer';
 import { useDateRange } from '../../../../context/DateRangeContext';
+import { useNotify } from '../../../../context/SnackBarContext';
+import { request } from '../../../../utility/request';
 
 export const InboundTraffic = ({ data, setGALegacyStatus, instanceZUID, profileID}) => {
 
+    const notify = useNotify()
     const dateRange = useDateRange()
     const [chartData, setChartData] = useState(data)
     const [loading, setLoading] = useState(false)
+
     useEffect(async () => {
       if (profileID !== null) {
-        setLoading(true)
-        const result = await getInboundTraffic()
 
-        if(!result.ok) return setGALegacyStatus(true)
+        try{
+          setLoading(true)
+          const result = await getInboundTraffic()
+  
+          if(!result.ok) throw result 
+  
+          const data = await result.json()
+          setChartData(data.chartJSData)
+          setLoading(false)
 
-        const data = await result.json()
+        }catch(err){
+          const error = await err.json()
+          setLoading(false)
+          return notify.current.error(error.error)
+        }
+       
 
-        setChartData(data.chartJSData)
-        setLoading(false)
       }
     }, [profileID, dateRange])
 

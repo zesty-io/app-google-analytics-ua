@@ -1,16 +1,19 @@
 import { useState, useEffect } from 'react'
-import GraphContainer from '../../../ui/GraphContainer'; 
+import GraphContainer from '../ui/GraphContainer';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { useDateRange } from '../../../../context/DateRangeContext';
-import { useNotify } from '../../../../context/SnackBarContext';
+import Checkbox from '@mui/material/Checkbox';
+import { useDateRange } from '../../context/DateRangeContext';
+import { useNotify } from '../../context/SnackBarContext';
+import { useGoogle } from '../../context/GoogleContext';
 
 
-export function TopPerforming({ profileID, instanceZUID }) {
+export function PageContentTable({ zuid }) {
 
+    const { googleDetails, setGoogleDetails } = useGoogle()
   const notify = useNotify()
   const dateRange = useDateRange()  
   const [headers, setHeaders] = useState([])
@@ -19,7 +22,7 @@ export function TopPerforming({ profileID, instanceZUID }) {
 
   useEffect(async () => {
 
-    if(profileID !== null){
+    if(googleDetails){
       try{
         setLoading(true)
         const result = await getTopTenContent()
@@ -39,20 +42,22 @@ export function TopPerforming({ profileID, instanceZUID }) {
         });
   
         setHeaders(json.tableData.headers)
+        console.log(truncatedData)
         setData(truncatedData)
         setLoading(false)
       }catch(err){
         const error = await err.json()
+        console.log(error)
         setLoading(false)
         return notify.current.error(error.error)
       }
       
     }
-  }, [profileID, dateRange])
+  }, [googleDetails, dateRange])
 
   const getTopTenContent = () => {
     return fetch(
-      `${process.env.REACT_APP_SERVICE_GOOGLE_ANALYTICS_READ}/?zuid=${instanceZUID}`,
+      `${process.env.REACT_APP_SERVICE_GOOGLE_ANALYTICS_READ}/?zuid=${zuid}`,
       {
         method: "POST",
         headers: {
@@ -62,17 +67,21 @@ export function TopPerforming({ profileID, instanceZUID }) {
           gaRequest: {
             reportRequests: [
               {
-                viewId: profileID,
+                viewId: googleDetails.defaultProfileId,
                 dateRanges: [{ startDate: dateRange.startDate, endDate: dateRange.endDate }],
                 metrics: [
-                  { expression: "ga:sessions" },
-                  { expression: "ga:avgSessionDuration" },
-                  { expression: "ga:bounceRate" },
+                    { expression: "ga:pageValue" },
+                    { expression: "ga:exits" },
+                    { expression: "ga:bounceRate" },
+                    { expression: "ga:entrances" },
+                    { expression: "ga:avgTimeOnPage" },
+                    { expression: "ga:uniquePageviews" },
+                    { expression: "ga:pageViews" },
                 ],
                 dimensions: [{ name: "ga:pagePath" }],
                 orderBys: [
                   {
-                    fieldName: "ga:sessions",
+                    fieldName: "ga:pageViews",
                     sortOrder: "DESCENDING",
                   },
                 ],
@@ -86,15 +95,20 @@ export function TopPerforming({ profileID, instanceZUID }) {
     );
   }
 
+  const isSelected = (item) => {
+    console.log(item)
+  }
+
     return (
 
-      <GraphContainer title="Top Performing Content" loading={loading}  subTitle={dateRange.selectedItem === "Custom" ? dateRange.startDate + " to " + dateRange.endDate : dateRange.selectedItem}>
+      <GraphContainer title="Pages" loading={loading} >
         
           {headers.length && data.length ? (
               
             <Table>
               <TableHead>
                 <TableRow>
+                    <TableCell></TableCell>
                   {headers.map((item) => (
                     <TableCell sx={{
                       fontWeight : 600
@@ -103,13 +117,27 @@ export function TopPerforming({ profileID, instanceZUID }) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {data.map((data, i) => (
-                  <TableRow>
-                    {data.map((field) => (
-                      <TableCell>{field}</TableCell>
-                    ))}
-                  </TableRow>
-                ))}
+                {data.map((data, i) => {    
+                    const isItemSelected = isSelected(data[0]);
+                    const labelId = `enhanced-table-checkbox-${i}`;
+                    
+                    return (
+                        <TableRow>
+                            <TableCell padding="checkbox">
+                                <Checkbox
+                                    color="primary"
+                                    checked={isItemSelected}
+                                    inputProps={{
+                                    'aria-labelledby': labelId,
+                                    }}
+                                />
+                            </TableCell>
+                            {data.map((field) => (
+                            <TableCell>{field}</TableCell>
+                            ))}
+                        </TableRow>
+                    )
+                })}
               </TableBody>
             </Table>
           ) : (

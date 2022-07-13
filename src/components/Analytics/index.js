@@ -12,6 +12,7 @@ import Modal from "@mui/material/Modal";
 import IconButton from "@mui/material/IconButton";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { CustomDatePicker } from "../ui/DatePicker/DatePicker";
+import CustomSnackbar from "../ui/SnackBar/SnackBar";
 
 export default function Analytics({ instance, token }) {
   const [gaAuthenticated, setGaAuthenticated] = useState(true); // we need check if the google profile id is available
@@ -215,6 +216,7 @@ export default function Analytics({ instance, token }) {
               display : "flex",
               gap : 2
             }}>
+            <CustomSnackbar />
             <CustomDatePicker />
             <Button
               variant="contained"

@@ -12,7 +12,6 @@ import moment from 'moment'
 import { useDateRange, useDateRangeUpdate } from '../../../context/DateRangeContext'
 
 export function CustomDatePicker(){
-
     const dateRange = useDateRange()
     const dateRangeUpdate = useDateRangeUpdate()
 
@@ -84,17 +83,10 @@ export function CustomDatePicker(){
         }
     }
 
-    const onStartDateChange = (event) => {
+    const onDateChange = (event) => {
         dateRangeUpdate({
             ...dateRange, 
-            startDate : event.target.value
-        })
-    }
-
-    const onEndDateChange = (event) => {
-        dateRangeUpdate({
-            ...dateRange, 
-            endDate : event.target.value
+            [event.target.name] : event.target.value
         })
     }
 
@@ -146,11 +138,12 @@ export function CustomDatePicker(){
                                 InputLabelProps={{ shrink: true, required: true }}
                                 type="date"
                                 defaultValue={dateRange.startDate}
-                                onChange={onStartDateChange}
+                                onBlur={onDateChange}
                                 inputProps={{
                                     max : dateRange.endDate,
-                                    required : true
+                                    required : true,
                                 }}
+                                
                             />
                             <TextField
                                 name="endDate"
@@ -158,7 +151,7 @@ export function CustomDatePicker(){
                                 InputLabelProps={{ shrink: true, required: true }}
                                 type="date"
                                 defaultValue={dateRange.endDate}
-                                onChange={onEndDateChange}
+                                onBlur={onDateChange}
                                 inputProps={{
                                     min:dateRange.startDate,
                                     required : true

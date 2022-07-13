@@ -3,24 +3,35 @@ import { Line } from "react-chartjs-2";
 import BarChartOutlinedIcon from '@mui/icons-material/BarChartOutlined';
 import GraphContainer from '../../../ui/GraphContainer';
 import { useDateRange } from '../../../../context/DateRangeContext';
+import { useNotify } from '../../../../context/SnackBarContext';
 
 export const PageviewTraffic = ({ setGALegacyStatus, instanceZUID, profileID, data, domainSet }) => {
     
     const dateRange = useDateRange()
-
+    const notify = useNotify()
     const [chartData, setChartData] = useState(data)
     const [loading, setLoading] = useState(false)
 
     useEffect(async () => {
       
       if(profileID !== null){
-        setLoading(true)
-        const result = await getBarChartData()
-        if(!result.ok) return setGALegacyStatus(true)
-        const data = await result.json()
-        setChartData(data.chartJSData)
-        setGALegacyStatus(false)
-        setLoading(false)
+
+        try{
+
+          setLoading(true)
+          const result = await getBarChartData()
+          if(!result.ok) throw result
+          const data = await result.json()
+          setChartData(data.chartJSData)
+          setGALegacyStatus(false)
+          setLoading(false)
+
+        }catch(err){
+          const error = await err.json()
+          setLoading(false)
+          return notify.current.error(error.error)
+        }
+        
       }
 
     }, [profileID, dateRange])
@@ -92,7 +103,6 @@ export const PageviewTraffic = ({ setGALegacyStatus, instanceZUID, profileID, da
                 xAxes: [
                   {
                     display: false,
-                    
                   },
                 ],
               },
