@@ -29,8 +29,18 @@ function App() {
 		<ContextWrapper>
 			<AppLoader
 				token={process.env.REACT_APP_TOKEN}
+<<<<<<< HEAD
 				instance={{ZUID: `${process.env.REACT_APP_ZUID}`, ID : 8355121}}>
 				<AppWrapper />
+=======
+				instance={
+					{
+						ZUID: `${process.env.REACT_APP_ZUID}`, 
+						ID : process.env.REACT_APP_INSTANCE_ID
+					}
+				}>
+					<Analytics />
+>>>>>>> 7773865a491095c2c8a8eaf8894b5838f6dc0fc8
 			</AppLoader>
 		</ContextWrapper>
 	);
