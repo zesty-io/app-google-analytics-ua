@@ -6,16 +6,12 @@ import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
-import { useDateRange } from '../../context/DateRangeContext';
 import { useNotify } from '../../context/SnackBarContext';
-import { useGoogle } from '../../context/GoogleContext';
 
 
-export function PageContentTable({ zuid, selectedPagePath, onCheckChange }) {
+export function PageContentTable({ zuid, selectedPagePath, onCheckChange, googleDetails, dateRange }) {
 
-  const { googleDetails, setGoogleDetails } = useGoogle()
   const notify = useNotify()
-  const dateRange = useDateRange()  
   const [headers, setHeaders] = useState([])
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(false)
@@ -126,7 +122,7 @@ export function PageContentTable({ zuid, selectedPagePath, onCheckChange }) {
                           }}>
                             <TableCell padding="checkbox">
                                 <Checkbox
-                                    color="primary"
+                                    color="secondary"
                                     checked={isItemSelected}
                                     onChange={(event) => onCheckChange(event, data[0])}
                                     inputProps={{

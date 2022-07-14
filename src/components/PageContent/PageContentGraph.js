@@ -2,28 +2,32 @@ import GraphContainer from "../ui/GraphContainer";
 import { Line } from "react-chartjs-2"
 import { useEffect, useState } from "react";
 import { shelldata } from "../analytics/graph";
+import MetricSelection from "./MetricSelection";
 
 export function PageContentGraph({ zuid, dateRange, googleDetails, selectedPath=[] }){
 
     const [chartData, setChartData] = useState(shelldata.shellBarData)
+    const [selectedMetrics, setSelectedMetrics] = useState([])
 
     useEffect(async () => {
         
         if(googleDetails){
+
             let paths = "";
-            let filterMetricDataSet = {}
             if(selectedPath.length !== 0){
                 paths = selectedPath.map(path => 'ga:pagePath==' + path).join(",")
             }
+
             const response = await getBarChartData(paths)
             const data = await response.json()
-            
-
-            setChartData(data.chartJSData)
+            const chart = data.chartJSData
+            if(selectedMetrics.length === 0) setSelectedMetrics([chart.datasets[0].label])
+            setChartData(chart)
 
         }
 
     }, [dateRange, googleDetails, selectedPath])
+
 
     const getBarChartData = (paths) => {
         return fetch(
@@ -69,11 +73,22 @@ export function PageContentGraph({ zuid, dateRange, googleDetails, selectedPath=
         );
       }
 
+    const onSelect = (event, metric) => {
+
+        if(event.target.checked) return setSelectedMetrics([...selectedMetrics, metric.label])
+
+        setSelectedMetrics(selectedMetrics.filter(selectedMetric => selectedMetric !== metric.label))
+       
+    }
+
     return (
         <>
-            <GraphContainer title="Content Pages" subTitle={dateRange.selectedItem}>
+            <GraphContainer title="Content Pages" subTitle={dateRange.selectedItem} rightMenu={<MetricSelection metrics={chartData.datasets} selectedMetrics={selectedMetrics} onSelect={onSelect} />}>
                 <Line
-                    data={chartData}
+                    data={{
+                        datasets : chartData.datasets.filter(metric => selectedMetrics.includes(metric.label)),
+                        labels : chartData.labels
+                    }}
                     // width={500}
                     height={400}
                     options={{
