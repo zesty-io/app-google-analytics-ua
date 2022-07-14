@@ -9,17 +9,16 @@ import { useDateRange } from '../../../../context/DateRangeContext';
 import { useNotify } from '../../../../context/SnackBarContext';
 
 
-export function TopPerforming({ profileID, instanceZUID }) {
+export function TopPerforming({ googleDetails, dateRange, instanceZUID }) {
 
   const notify = useNotify()
-  const dateRange = useDateRange()  
   const [headers, setHeaders] = useState([])
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(false)
 
   useEffect(async () => {
 
-    if(profileID !== null){
+    if(googleDetails){
       try{
         setLoading(true)
         const result = await getTopTenContent()
@@ -48,7 +47,7 @@ export function TopPerforming({ profileID, instanceZUID }) {
       }
       
     }
-  }, [profileID, dateRange])
+  }, [googleDetails, dateRange])
 
   const getTopTenContent = () => {
     return fetch(
@@ -62,7 +61,7 @@ export function TopPerforming({ profileID, instanceZUID }) {
           gaRequest: {
             reportRequests: [
               {
-                viewId: profileID,
+                viewId: googleDetails.defaultProfileId,
                 dateRanges: [{ startDate: dateRange.startDate, endDate: dateRange.endDate }],
                 metrics: [
                   { expression: "ga:sessions" },

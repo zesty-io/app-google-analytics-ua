@@ -11,14 +11,19 @@ import { useNotify } from '../../context/SnackBarContext';
 import { useGoogle } from '../../context/GoogleContext';
 
 
-export function PageContentTable({ zuid }) {
+export function PageContentTable({ zuid, selectedPagePath, onCheckChange }) {
 
-    const { googleDetails, setGoogleDetails } = useGoogle()
+  const { googleDetails, setGoogleDetails } = useGoogle()
   const notify = useNotify()
   const dateRange = useDateRange()  
   const [headers, setHeaders] = useState([])
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(false)
+  const [selected, setSelected] = useState([])
+
+  useEffect(() => {
+    console.log(selected)
+  }, [selected])
 
   useEffect(async () => {
 
@@ -42,7 +47,6 @@ export function PageContentTable({ zuid }) {
         });
   
         setHeaders(json.tableData.headers)
-        console.log(truncatedData)
         setData(truncatedData)
         setLoading(false)
       }catch(err){
@@ -94,11 +98,7 @@ export function PageContentTable({ zuid }) {
       }
     );
   }
-
-  const isSelected = (item) => {
-    console.log(item)
-  }
-
+  
     return (
 
       <GraphContainer title="Pages" loading={loading} >
@@ -108,25 +108,27 @@ export function PageContentTable({ zuid }) {
             <Table>
               <TableHead>
                 <TableRow>
-                    <TableCell></TableCell>
+                  <TableCell></TableCell>
                   {headers.map((item) => (
-                    <TableCell sx={{
-                      fontWeight : 600
-                    }}>{item.replace(/([A-Z])/g, ' $1').trim()}</TableCell>
+                    <TableCell>{item.replace(/([A-Z])/g, ' $1').trim()}</TableCell>
                   ))}
                 </TableRow>
               </TableHead>
               <TableBody>
                 {data.map((data, i) => {    
-                    const isItemSelected = isSelected(data[0]);
+                    const isItemSelected = selectedPagePath.includes(data[0]);
                     const labelId = `enhanced-table-checkbox-${i}`;
                     
                     return (
-                        <TableRow>
+                        <TableRow
+                          sx={{
+                            backgroundColor : selectedPagePath.length !== 0 ? selectedPagePath.includes(data[0]) ?   "#ffffff" : "#f2f4fb" : "#ffffff"
+                          }}>
                             <TableCell padding="checkbox">
                                 <Checkbox
                                     color="primary"
                                     checked={isItemSelected}
+                                    onChange={(event) => onCheckChange(event, data[0])}
                                     inputProps={{
                                     'aria-labelledby': labelId,
                                     }}

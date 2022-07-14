@@ -1,19 +1,16 @@
 import React, {useEffect, useState} from 'react' 
 import { Doughnut } from "react-chartjs-2";
 import GraphContainer from '../../../ui/GraphContainer';
-import { useDateRange } from '../../../../context/DateRangeContext';
 import { useNotify } from '../../../../context/SnackBarContext';
-import { request } from '../../../../utility/request';
 
-export const InboundTraffic = ({ data, setGALegacyStatus, instanceZUID, profileID}) => {
+export const InboundTraffic = ({ data, instanceZUID, googleDetails, dateRange}) => {
 
     const notify = useNotify()
-    const dateRange = useDateRange()
     const [chartData, setChartData] = useState(data)
     const [loading, setLoading] = useState(false)
 
     useEffect(async () => {
-      if (profileID !== null) {
+      if (googleDetails) {
 
         try{
           setLoading(true)
@@ -33,7 +30,7 @@ export const InboundTraffic = ({ data, setGALegacyStatus, instanceZUID, profileI
        
 
       }
-    }, [profileID, dateRange])
+    }, [googleDetails, dateRange])
 
     const getInboundTraffic = () => {
       return fetch(
@@ -48,7 +45,7 @@ export const InboundTraffic = ({ data, setGALegacyStatus, instanceZUID, profileI
             gaRequest: {
               reportRequests: [
                 {
-                  viewId: profileID,
+                  viewId: googleDetails.defaultProfileId,
                   dateRanges: [{ startDate: dateRange.startDate, endDate: dateRange.endDate }],
                   metrics: [{ expression: "ga:sessions" }],
                   dimensions: [{ name: "ga:medium" }],

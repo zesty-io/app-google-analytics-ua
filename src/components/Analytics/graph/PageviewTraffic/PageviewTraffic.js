@@ -2,19 +2,17 @@ import React, { useEffect, useState } from 'react'
 import { Line } from "react-chartjs-2";
 import BarChartOutlinedIcon from '@mui/icons-material/BarChartOutlined';
 import GraphContainer from '../../../ui/GraphContainer';
-import { useDateRange } from '../../../../context/DateRangeContext';
 import { useNotify } from '../../../../context/SnackBarContext';
 
-export const PageviewTraffic = ({ setGALegacyStatus, instanceZUID, profileID, data, domainSet }) => {
+export const PageviewTraffic = ({ instanceZUID, googleDetails, dateRange, data }) => {
     
-    const dateRange = useDateRange()
     const notify = useNotify()
     const [chartData, setChartData] = useState(data)
     const [loading, setLoading] = useState(false)
 
     useEffect(async () => {
       
-      if(profileID !== null){
+      if(googleDetails){
 
         try{
 
@@ -23,7 +21,6 @@ export const PageviewTraffic = ({ setGALegacyStatus, instanceZUID, profileID, da
           if(!result.ok) throw result
           const data = await result.json()
           setChartData(data.chartJSData)
-          setGALegacyStatus(false)
           setLoading(false)
 
         }catch(err){
@@ -34,7 +31,7 @@ export const PageviewTraffic = ({ setGALegacyStatus, instanceZUID, profileID, da
         
       }
 
-    }, [profileID, dateRange])
+    }, [googleDetails, dateRange])
 
     const getBarChartData = () => {
 
@@ -48,7 +45,7 @@ export const PageviewTraffic = ({ setGALegacyStatus, instanceZUID, profileID, da
             gaRequest: {
               reportRequests: [
                 {
-                  viewId: profileID,
+                  viewId: googleDetails.defaultProfileId,
                   dateRanges: [
                     {
                       startDate: dateRange.startDate,
@@ -103,6 +100,7 @@ export const PageviewTraffic = ({ setGALegacyStatus, instanceZUID, profileID, da
                 xAxes: [
                   {
                     display: false,
+                    
                   },
                 ],
               },
