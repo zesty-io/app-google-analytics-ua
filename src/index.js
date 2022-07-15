@@ -6,10 +6,14 @@ import reportWebVitals from './reportWebVitals';
 import theme from './theme'
 import { ThemeProvider } from '@mui/material/styles'
 import {CssBaseline} from '@mui/material'
+import ContextWrapper from "./context";
+
 ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
-      <App />
+      <ContextWrapper>
+        <App />
+      </ContextWrapper>
     </ThemeProvider>
   </React.StrictMode>,
   document.getElementById('root')

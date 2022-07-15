@@ -12,6 +12,13 @@ export default function PageContent({ instance }){
     const {googleDetails, setGoogleDetails} = useGoogle()
     const [selectedPagePath, setSelectedPagePath] = useState([])
 
+    const onCheckChange = (event, name) => {
+
+        if(event.target.checked) return setSelectedPagePath([...selectedPagePath, name ])
+        setSelectedPagePath(selectedPagePath.filter(site => site !== name))
+        
+     }
+
     return (
         <>
             <Box sx={{ 
@@ -20,11 +27,7 @@ export default function PageContent({ instance }){
                 flexDirection : "column"
             }}>
                 <PageContentGraph zuid={instance.ZUID} dateRange={dateRange} googleDetails={googleDetails} selectedPath={selectedPagePath} />
-                <PageContentTable zuid={instance.ZUID} selectedPagePath={selectedPagePath} dateRange={dateRange} googleDetails={googleDetails} onCheckChange={(event, name) => {
-                   if(event.target.checked) return setSelectedPagePath([...selectedPagePath, name ])
-    
-                   setSelectedPagePath(selectedPagePath.filter(site => site !== name))
-                }} />
+                <PageContentTable zuid={instance.ZUID} selectedPagePath={selectedPagePath} dateRange={dateRange} googleDetails={googleDetails} onCheckChange={onCheckChange} />
             </Box>
         </>
     )

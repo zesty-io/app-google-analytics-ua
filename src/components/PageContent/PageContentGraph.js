@@ -50,6 +50,7 @@ export function PageContentGraph({ zuid, dateRange, googleDetails, selectedPath=
                       { expression: "ga:bounceRate" },
                       { expression: "ga:entrances" },
                       { expression: "ga:avgTimeOnPage" },
+                      { expression: "ga:timeOnPage" },
                       { expression: "ga:uniquePageviews" },
                       { expression: "ga:pageViews" },
                       

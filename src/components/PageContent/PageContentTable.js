@@ -7,6 +7,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import { useNotify } from '../../context/SnackBarContext';
+import { PageContentTableSummary } from './PageContentTableSummary';
 
 
 export function PageContentTable({ zuid, selectedPagePath, onCheckChange, googleDetails, dateRange }) {
@@ -15,11 +16,9 @@ export function PageContentTable({ zuid, selectedPagePath, onCheckChange, google
   const [headers, setHeaders] = useState([])
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(false)
-  const [selected, setSelected] = useState([])
+  const [googleData, setGoogleData] = useState([])
 
-  useEffect(() => {
-    console.log(selected)
-  }, [selected])
+
 
   useEffect(async () => {
 
@@ -31,6 +30,7 @@ export function PageContentTable({ zuid, selectedPagePath, onCheckChange, google
         if(!result.ok) throw result
   
         const json = await result.json()
+        setGoogleData(json.googleData)
         const truncatedData = json.tableData.data.map((row) => {
           return row.map((col) => {
             // will not attempt conversion on a path
@@ -41,7 +41,7 @@ export function PageContentTable({ zuid, selectedPagePath, onCheckChange, google
             }
           });
         });
-  
+        
         setHeaders(json.tableData.headers)
         setData(truncatedData)
         setLoading(false)
@@ -71,7 +71,7 @@ export function PageContentTable({ zuid, selectedPagePath, onCheckChange, google
                 dateRanges: [{ startDate: dateRange.startDate, endDate: dateRange.endDate }],
                 metrics: [
                     { expression: "ga:pageValue" },
-                    { expression: "ga:exits" },
+                    { expression: "ga:exitRate" },
                     { expression: "ga:bounceRate" },
                     { expression: "ga:entrances" },
                     { expression: "ga:avgTimeOnPage" },
@@ -96,7 +96,8 @@ export function PageContentTable({ zuid, selectedPagePath, onCheckChange, google
   }
   
     return (
-
+      <>
+      <PageContentTableSummary data={googleData} selectedPath={selectedPagePath} />
       <GraphContainer title="Pages" loading={loading} >
         
           {headers.length && data.length ? (
@@ -142,6 +143,6 @@ export function PageContentTable({ zuid, selectedPagePath, onCheckChange, google
             "No content performance data to display"
           )} 
       </GraphContainer>
-     
+      </>
     );
   }

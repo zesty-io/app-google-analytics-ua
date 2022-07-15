@@ -21,7 +21,7 @@ const Menu = () => (
             </MenuItem>
             <MenuItem component={Link} to="/content">
                 <Typography sx={{ fontWeight : "bold" }}>
-                    Content Pages
+                    Pages
                 </Typography>
             </MenuItem>
             <MenuItem component={Link} to="/journey">
