@@ -3,11 +3,15 @@ import { Line } from "react-chartjs-2"
 import { useEffect, useState } from "react";
 import { shelldata } from "../analytics/graph";
 import MetricSelection from "./MetricSelection";
+import Box from '@mui/material/Box'
+import { Typography } from "@mui/material";
 
 export function PageContentGraph({ zuid, dateRange, googleDetails, selectedPath=[] }){
 
     const [chartData, setChartData] = useState(shelldata.shellBarData)
-    const [selectedMetrics, setSelectedMetrics] = useState([])
+    const [selectedMetricsY1, setSelectedMetricsY1] = useState(null)
+    const [selectedMetricsY2, setSelectedMetricsY2] = useState(null)
+    const [compareMetrics, setCompareMetrics] = useState([])
 
     useEffect(async () => {
         
@@ -21,7 +25,6 @@ export function PageContentGraph({ zuid, dateRange, googleDetails, selectedPath=
             const response = await getBarChartData(paths)
             const data = await response.json()
             const chart = data.chartJSData
-            if(selectedMetrics.length === 0) setSelectedMetrics([chart.datasets[0].label])
             setChartData(chart)
 
         }
@@ -74,46 +77,81 @@ export function PageContentGraph({ zuid, dateRange, googleDetails, selectedPath=
         );
       }
 
-    const onSelect = (event, metric) => {
-
-        if(event.target.checked) return setSelectedMetrics([...selectedMetrics, metric.label])
-
-        setSelectedMetrics(selectedMetrics.filter(selectedMetric => selectedMetric !== metric.label))
-       
+    const onSelectY1 = (event, metric) => {
+      if(event.target.checked) return setSelectedMetricsY1(metric)
+      setSelectedMetricsY1(null)
     }
+
+    const onSelectY2 = (event, metric) => {
+      if(event.target.checked) return setSelectedMetricsY2(metric)
+      setSelectedMetricsY2(null)
+    }
+
+    const getY1 = () => {
+      if(selectedMetricsY1){
+        return chartData.datasets.filter(data => data.label === selectedMetricsY1).map(data => { return {...data,  yAxisID: 'y1'}})[0]
+      }
+      return null
+    }
+
+    const getY2 = () => {
+      if(selectedMetricsY2){
+        return chartData.datasets.filter(data => data.label === selectedMetricsY2).map(data => { return {...data,  yAxisID: 'y2'}})[0]
+      }
+      return null
+    }
+
+    const MetricSelectionComponent = () => {
+
+      return (
+        <>
+          <Box sx={{ display : "flex", gap: 2 }}>
+            <MetricSelection metrics={chartData.datasets} selectedMetrics={selectedMetricsY1} onSelect={onSelectY1} />
+            <Typography>
+              vs
+            </Typography>
+            <MetricSelection metrics={chartData.datasets} selectedMetrics={selectedMetricsY2} onSelect={onSelectY2} />
+          </Box>
+         
+        </>
+      )
+    }
+
 
     return (
         <>
-            <GraphContainer title="Content Pages" subTitle={dateRange.selectedItem} rightMenu={<MetricSelection metrics={chartData.datasets} selectedMetrics={selectedMetrics} onSelect={onSelect} />}>
+            <GraphContainer title="Content Pages" subTitle={dateRange.selectedItem} rightMenu={<MetricSelectionComponent />}>
                 <Line
                     data={{
-                        datasets : chartData.datasets.filter(metric => selectedMetrics.includes(metric.label)),
-                        labels : chartData.labels
+                        labels : chartData.labels,
+                        datasets:[
+                          getY1(),
+                          getY2()
+                        ].filter(dataset => dataset !== null),
                     }}
                     // width={500}
                     height={400}
                     options={{
-                    maintainAspectRatio: false,
-                    bezierCurve: false,
-                    scales: {
-                        yAxes: [
-                        {
-                            display: true,
-                            
-                        },
-                        ],
-                        xAxes: [
-                        {
-                            display: true,
-                        },
-                        ],
-                    },
-                    options: {
+                      maintainAspectRatio: false,
+                      bezierCurve: false,
+                      scales: {
+                        yAxes: [{
+                            id: 'y1',                             
+                            type: 'linear',
+                            position: 'left',
+                        }, {
+                            id: 'y2',                             
+                            type: 'linear',
+                            position: 'right',
+                        }]
+                       
+                      },
+                      options: {
                         legend: {
-                        display: true,
-                        position: "bottom",
+                          display: true,
+                          position: "bottom",
                         },
-                    },
+                      },
                     }}
                 />
                 

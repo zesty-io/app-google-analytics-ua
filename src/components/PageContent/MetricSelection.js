@@ -28,7 +28,7 @@ export default function MetricSelection({ metrics, selectedMetrics, onSelect }){
     return (
       <div>
         <Link underline="none" aria-describedby={id} onClick={handleClick}>
-          <Typography sx={{ fontWeight : "bold", cursor : "pointer" }}>Metrics</Typography>
+          <Typography sx={{ fontWeight : "bold", cursor : "pointer" }}>{selectedMetrics ? selectedMetrics : "Select a Metric"}</Typography>
         </Link>
         <Popover
           id={id}
@@ -44,11 +44,11 @@ export default function MetricSelection({ metrics, selectedMetrics, onSelect }){
                 <FormGroup>
                     {metrics.map((metrics, i) => {
 
-                        const isItemSelected = selectedMetrics.includes(metrics.label);
+                        const isItemSelected = selectedMetrics ? metrics.label === selectedMetrics : false;
                         const labelId = `enhanced-table-checkbox-${i}`;
 
                         return (
-                            <FormControlLabel control={<Checkbox color="secondary" onChange={(event) => onSelect(event, metrics)} checked={isItemSelected} inputProps={{  'aria-labelledby': labelId, }}  />} label={metrics.label} />
+                            <FormControlLabel control={<Checkbox color="secondary" onChange={(event) => onSelect(event, metrics.label)} checked={isItemSelected} inputProps={{  'aria-labelledby': labelId, }}  />} label={metrics.label} />
                         )
                     })}
                 </FormGroup>

@@ -2,7 +2,8 @@ import {
         Card, 
         Grid, 
         Box,
-        Typography
+        Typography,
+        Divider
     } from '@mui/material'
 import { useEffect, useState } from 'react'
 import moment from 'moment'
@@ -39,13 +40,18 @@ export function PageContentTableSummary({ data, selectedPath }){
     }
 
     const GridItem = ({ headerTitle, value }) => (
+        <>
         <Grid item sx={{ padding : 4 }}>
             <Typography sx={{ fontWeight : "bold", fontSize:"10pt" }}>{headerTitle}</Typography>
             <Box sx={{ marginTop : "10px"}}>
                 <Typography sx={{ fontWeight : "bold" }}>{value}</Typography>
                 <Typography sx={{ fontSize : "10pt" }}>% of Total : 100%</Typography>
             </Box>
+            
         </Grid>
+        <Divider orientation="vertical" flexItem/>
+        </>
+        
     )
 
     return (
