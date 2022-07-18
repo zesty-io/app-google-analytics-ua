@@ -44,10 +44,9 @@ export function PageContentTable({ zuid, selectedPagePath, onCheckChange, google
         setData(truncatedData)
         setLoading(false)
       }catch(err){
-        const error = await err.json()
-        console.log(error)
+        console.log(err)
         setLoading(false)
-        return notify.current.error(error.error)
+        return notify.current.error(err)
       }
       
     }
