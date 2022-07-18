@@ -38,7 +38,6 @@ export default function AppWrapper(props){
         <Box p={4}>
            
            <NavBar zuid={props.instance.ZUID}/>
-           
            <Router>
                 <Box sx={{ display : "flex", gap : 4 }}>
                         <Box>

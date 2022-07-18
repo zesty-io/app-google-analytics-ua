@@ -10,15 +10,13 @@ import { useNotify } from '../../context/SnackBarContext';
 import { PageContentTableSummary } from './PageContentTableSummary';
 
 
-export function PageContentTable({ zuid, selectedPagePath, onCheckChange, googleDetails, dateRange }) {
+export function PageContentTable({ zuid, selectedPagePath, onCheckChange, googleDetails, dateRange, chartData}) {
 
   const notify = useNotify()
   const [headers, setHeaders] = useState([])
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(false)
   const [googleData, setGoogleData] = useState([])
-
-
 
   useEffect(async () => {
 
@@ -97,7 +95,7 @@ export function PageContentTable({ zuid, selectedPagePath, onCheckChange, google
   
     return (
       <>
-      <PageContentTableSummary data={googleData} selectedPath={selectedPagePath} />
+      <PageContentTableSummary data={googleData} selectedPath={selectedPagePath} chartData={chartData} />
       <GraphContainer title="Pages" loading={loading} >
         
           {headers.length && data.length ? (

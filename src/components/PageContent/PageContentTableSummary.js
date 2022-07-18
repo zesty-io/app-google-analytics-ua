@@ -8,20 +8,21 @@ import {
 import { useEffect, useState } from 'react'
 import moment from 'moment'
 
-export function PageContentTableSummary({ data, selectedPath }){
+export function PageContentTableSummary({ data, selectedPath, chartData }){
 
     const [summaryData, setSummaryData] = useState([]) 
 
     useEffect(() => {
+
         if(data.length !== 0){
 
-            const returnData = formatData(data)
-            console.log(returnData)
+            const returnData = formatData(selectedPath.length === 0 ? data : chartData)
+            console.log(chartData)
             setSummaryData(returnData)
-    
+            
         }
-      
-    }, [data, selectedPath])
+        
+    }, [chartData, selectedPath, data])
 
     const formatHeaderText = (text) => {
         return text.replace("ga:", "").replace(/([A-Z])/g, ' $1').trim().toUpperCase()
@@ -31,7 +32,11 @@ export function PageContentTableSummary({ data, selectedPath }){
 
         var metricHeader = data.reports[0].columnHeader.metricHeader.metricHeaderEntries.map(metric => formatHeaderText(metric.name));
         var metricData = data.reports[0].data.totals[0].values.map((value, i) => {
-            if(i == 4) return moment.utc(Number(value), 'ss').format('HH:mm:ss')
+
+            if(i == 4) return moment.utc(Number(value), 'ss').format('HH:mm:ss') // Format to time
+            if(i == 0) return Number(Math.round(value + "e" + 2) + "e-" + 2) + '$' // add percentage
+            if([1,2].includes(i)) return Number(Math.round(value + "e" + 2) + "e-" + 2) + '%'
+
             return Number(Math.round(value + "e" + 2) + "e-" + 2)
         })
 
@@ -65,7 +70,6 @@ export function PageContentTableSummary({ data, selectedPath }){
                     {summaryData.length !== 0 && summaryData.metricHeader.map((metric, i) => (
                         <GridItem headerTitle={metric} value={summaryData.metricData[i]} />
                     ))}
-                    
                     
                 </Grid>
             </Card>
