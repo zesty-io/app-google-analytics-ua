@@ -27,8 +27,8 @@ export default function MetricSelection({ metrics, selectedMetrics, onSelect }){
   
     return (
       <div>
-        <Link underline="none" aria-describedby={id} onClick={handleClick}>
-          <Typography sx={{ fontWeight : "bold", cursor : "pointer" }}>{selectedMetrics ? selectedMetrics : "Select a Metric"}</Typography>
+        <Link aria-describedby={id} onClick={handleClick} sx={{ padding : 0, cursor : "pointer"}} color="secondary">
+          <Typography sx={{ fontWeight : "bold" }}>{selectedMetrics ? selectedMetrics : "Select a Metric"}</Typography>
         </Link>
         <Popover
           id={id}

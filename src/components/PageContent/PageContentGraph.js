@@ -41,7 +41,7 @@ export function PageContentGraph({ selectedPath, data }){
 
       return (
         <>
-          <Box sx={{ display : "flex", gap: 2 }}>
+          <Box sx={{ display : "flex", gap: 2, alignItems : "center", justifyContent : "center" }}>
             <MetricSelection metrics={data.datasets} selectedMetrics={selectedMetricsY1} onSelect={onSelectY1} />
             <Typography>
               vs
