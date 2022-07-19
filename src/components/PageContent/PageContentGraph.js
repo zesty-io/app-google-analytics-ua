@@ -12,6 +12,14 @@ export function PageContentGraph({ selectedPath, data }){
     const dateRange = useDateRange()
     const [selectedMetricsY1, setSelectedMetricsY1] = useState(null)
     const [selectedMetricsY2, setSelectedMetricsY2] = useState(null)
+
+    useEffect(() => {
+
+      console.log(data)
+
+      if(data && data.datasets[0].label !== "Loading") setSelectedMetricsY1("PageViews")
+
+    }, [selectedPath, data])
     
     const onSelectY1 = (event, metric) => {
       if(event.target.checked) return setSelectedMetricsY1(metric)
