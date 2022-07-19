@@ -88,7 +88,7 @@ export default function PageContent({ instance }){
             <Box sx={{ 
                 display : "flex",
                 gap : 4,
-                flexDirection : "column"
+                flexDirection : "column",
             }}>
                 <PageContentGraph selectedPath={selectedPagePath} data={chartData} />
                 <PageContentTable 

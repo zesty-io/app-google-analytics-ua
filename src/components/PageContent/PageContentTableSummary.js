@@ -80,11 +80,11 @@ export function PageContentTableSummary({ data, selectedPath, chartData }){
     const GridItem = (props) => (
         <>
             <Grid item sx={{ padding : 4 }}>
-                <Typography sx={{ fontWeight : "bold", fontSize:"10pt" }}>{props.label}</Typography>    
+                <Typography sx={{ fontWeight : "bold", fontSize:"10pt", color : '#5b667d' }}>{props.label}</Typography>    
                 <Box sx={{ marginTop : "5px"}}>
                     <Typography sx={{ fontSize : "18pt", fontWeight : "bold", marginBottom : "5px" }}>{props.selectedValue !== null ? props.selectedValue : props.data}</Typography>
                     <Typography sx={{ fontSize : "10pt" }}>{`% of Total : ${avg(props.selectedValue, props.data)}%`}</Typography>
-                    <Typography sx={{ fontSize : "10pt" }}>{`(${props.data})`}</Typography>
+                    <Typography sx={{ fontSize : "10pt", color : '#5b667d' }}>{`(${props.data})`}</Typography>
                 </Box>
             </Grid>
             <Divider orientation="vertical" flexItem/>
@@ -94,11 +94,11 @@ export function PageContentTableSummary({ data, selectedPath, chartData }){
     const GridItemTime = (props) => (
         <>
             <Grid item sx={{ padding : 4 }}>
-                <Typography sx={{ fontWeight : "bold", fontSize:"10pt" }}>{props.label}</Typography>    
+                <Typography sx={{ fontWeight : "bold", fontSize:"10pt", color : '#5b667d'}}>{props.label}</Typography>    
                 <Box sx={{ marginTop : "5px"}}>
                     <Typography sx={{ fontSize : "18pt", fontWeight : "bold", marginBottom : "5px" }}>{time(props.selectedValue !== null ? props.selectedValue : props.data)}</Typography>
                     <Typography sx={{ fontSize : "10pt" }}>{`Avg for view: ${time(props.data)}`}</Typography>
-                    <Typography sx={{ fontSize : "10pt" }}>{`( ${avg(props.selectedValue, props.data)}%)`}</Typography>
+                    <Typography sx={{ fontSize : "10pt", color : '#5b667d' }}>{`( ${avg(props.selectedValue, props.data)}%)`}</Typography>
                 </Box>
             </Grid>
             <Divider orientation="vertical" flexItem/>
@@ -109,11 +109,11 @@ export function PageContentTableSummary({ data, selectedPath, chartData }){
     const GridItemRate = (props) => (
         <>
             <Grid item sx={{ padding : 4 }}>
-                <Typography sx={{ fontWeight : "bold", fontSize:"10pt" }}>{props.label}</Typography>    
+                <Typography sx={{ fontWeight : "bold", fontSize:"10pt", color : '#5b667d' }}>{props.label}</Typography>    
                 <Box sx={{ marginTop : "5px"}}>
                     <Typography sx={{ fontSize : "18pt", fontWeight : "bold", marginBottom : "5px" }}>{props.selectedValue !== null ? props.selectedValue : props.data}%</Typography>
                     <Typography sx={{ fontSize : "10pt" }}>{`Avg for view : ${avg(props.data, props.selectedValue)}%`}</Typography>
-                    <Typography sx={{ fontSize : "10pt" }}>{`(${props.data}%)`}</Typography>
+                    <Typography sx={{ fontSize : "10pt", color : '#5b667d' }}>{`(${props.data}%)`}</Typography>
                 </Box>
             </Grid>
             <Divider orientation="vertical" flexItem/>
