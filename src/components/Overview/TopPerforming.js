@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react'
-import GraphContainer from '../../../ui/GraphContainer'; 
+import GraphContainer from '../ui/GraphContainer';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { useDateRange } from '../../../../context/DateRangeContext';
-import { useNotify } from '../../../../context/SnackBarContext';
+import { useNotify } from '../../context/SnackBarContext';
 
 
 export function TopPerforming({ googleDetails, dateRange, instanceZUID }) {

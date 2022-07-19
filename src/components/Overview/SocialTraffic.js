@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Doughnut } from "react-chartjs-2";
-import GraphContainer from '../../../ui/GraphContainer';
-import { useNotify } from '../../../../context/SnackBarContext';
+import GraphContainer from '../ui/GraphContainer';
+import { useNotify } from '../../context/SnackBarContext';
 
 export const SocialTraffic = ({ instanceZUID, googleDetails, dateRange ,data }) => {
 

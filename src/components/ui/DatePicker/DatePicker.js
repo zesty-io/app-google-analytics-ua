@@ -8,7 +8,9 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select'
 import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
 import moment from 'moment'
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import { useDateRange, useDateRangeUpdate } from '../../../context/DateRangeContext'
 
 export function CustomDatePicker(){
@@ -92,9 +94,13 @@ export function CustomDatePicker(){
 
     return (
         <>
-            <Button aria-describedby={id} variant="contained" onClick={handleClick} color="secondary">
-                Change Date Range
-            </Button>
+            <Box sx={{ display : "flex", alignItems : "center", justifyContent : "center", gap : 4 }}>
+                <Typography variant="body2" sx={{ color: "#5b667d", fontWeight : "bold" }}>{dateRange.startDate + " - " + dateRange.endDate}</Typography>
+                <Button aria-describedby={id} variant="contained" onClick={handleClick} color="secondary" startIcon={<CalendarMonthIcon />}>
+                    Change Date Range
+                </Button>
+            </Box>
+           
             <Popover
                 id={id}
                 open={open}

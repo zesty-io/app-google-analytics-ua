@@ -1,22 +1,14 @@
-import { useState, useEffect } from "react";
-import { PageviewTraffic, InboundTraffic, SocialTraffic, TopPerforming, shelldata } from './graph'
-import { GoogleAuthOverlay } from "../ui/AuthOverlay";
-import { GaTable } from "../ui/Table/GaTable";
+import shelldata from "../ui/ShellData/shelldata";
+import { PageviewTraffic } from "./PageviewTraffic";
+import { InboundTraffic } from "./InboundTraffic";
+import { SocialTraffic } from "./SocialTraffic";
+import { TopPerforming } from './TopPerforming';
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import Backdrop from "@mui/material/Backdrop";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import Card from "@mui/material/Card";
-import Modal from "@mui/material/Modal";
-import IconButton from "@mui/material/IconButton";
-import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
-import { CustomDatePicker } from "../ui/DatePicker/DatePicker";
-import CustomSnackbar from "../ui/SnackBar/SnackBar";
 import { useGoogle } from "../../context/GoogleContext";
 import { useDateRange } from "../../context/DateRangeContext";
 
-export default function Analytics({ instance, token }) {
+export default function Overview({ instance, token }) {
   const { googleDetails, setGoogleDetails } = useGoogle()
   const dateRange = useDateRange()
   

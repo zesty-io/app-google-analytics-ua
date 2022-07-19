@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Line } from "react-chartjs-2";
-import BarChartOutlinedIcon from '@mui/icons-material/BarChartOutlined';
-import GraphContainer from '../../../ui/GraphContainer';
-import { useNotify } from '../../../../context/SnackBarContext';
+import GraphContainer from '../ui/GraphContainer';
+import { useNotify } from '../../context/SnackBarContext';
 
 export const PageviewTraffic = ({ instanceZUID, googleDetails, dateRange, data }) => {
     

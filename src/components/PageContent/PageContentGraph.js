@@ -1,7 +1,7 @@
 import GraphContainer from "../ui/GraphContainer";
 import { Line } from "react-chartjs-2"
 import { useEffect, useState } from "react";
-import { shelldata } from "../analytics/graph";
+import shelldata from "../ui/ShellData/shelldata";
 import MetricSelection from "./MetricSelection";
 import Box from '@mui/material/Box'
 import { Typography } from "@mui/material";
@@ -15,11 +15,9 @@ export function PageContentGraph({ selectedPath, data }){
 
     useEffect(() => {
 
-      console.log(data)
-
       if(data && data.datasets[0].label !== "Loading") setSelectedMetricsY1("PageViews")
 
-    }, [selectedPath, data])
+    }, [data])
     
     const onSelectY1 = (event, metric) => {
       if(event.target.checked) return setSelectedMetricsY1(metric)

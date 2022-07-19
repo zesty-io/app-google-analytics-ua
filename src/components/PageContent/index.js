@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDateRange } from '../../context/DateRangeContext'
 import { useGoogle } from '../../context/GoogleContext'
-import { shelldata } from '../analytics/graph'
+import shelldata from '../ui/ShellData/shelldata'
 import { Box } from '@mui/material'
 import { PageContentTable } from './PageContentTable'
 import { PageContentGraph } from './PageContentGraph'

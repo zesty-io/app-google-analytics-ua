@@ -2,8 +2,9 @@
 
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 import { Box } from '@mui/material'
-import Analytics from '../../analytics'
+import Overview from '../../Overview'
 import PageContent from '../../PageContent'
+import Journey from '../../Journey'
 import NavBar from '../NavBar/NavBar'
 import Paper from '@mui/material/Paper';
 import MenuList from '@mui/material/MenuList';
@@ -45,8 +46,9 @@ export default function AppWrapper(props){
                         </Box>
                         <Box sx={{ flexGrow : 1 }}>
                             <Routes>
-                                <Route path="/" element={<Analytics {...props} />} />
+                                <Route path="/" element={<Overview {...props} />} />
                                 <Route path="/content" element={<PageContent {...props} />} />
+                                <Route path="/journey" element={<Journey {...props} />} />
                             </Routes>
                         </Box>
                 </Box>
