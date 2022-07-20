@@ -2,8 +2,7 @@ import GraphContainer from "../ui/GraphContainer";
 import { Line } from "react-chartjs-2"
 import { useEffect, useState } from "react";
 import MetricSelection from "./MetricSelection";
-import Box from '@mui/material/Box'
-import { Typography } from "@mui/material";
+import { Typography, Box } from "@mui/material";
 import { useDateRange } from "../../context/DateRangeContext";
 import moment from "moment";
 

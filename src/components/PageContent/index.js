@@ -8,6 +8,7 @@ import { PageContentGraph } from "./PageContentGraph";
 import { useNotify } from "../../context/SnackBarContext";
 import { useAnalyticsApi } from "../../services/useAnalyticsApi";
 import { PageContentTableSummary } from "./PageContentTableSummary";
+import Grid from '@mui/material/Grid'
 
 export default function PageContent({ instance }) {
 
@@ -48,19 +49,17 @@ export default function PageContent({ instance }) {
 
   return (
     <>
-      <Box
-        sx={{
-          display: "flex",
-          gap: 4,
-          flexDirection: "column",
-        }}
-      >
-        
-        <PageContentGraph selectedPath={selectedPagePath} data={chartData} isLoading={loading} />
-        <PageContentTableSummary selectedPath={selectedPagePath} data={tableData.googleData} tableData={googleData} isLoading={loading} />
-        <PageContentTable selectedPagePath={selectedPagePath} tableData={tableData} onCheckChange={onCheckChange} isLoading={loading} />
-          
-      </Box>
+       <Grid container spacing={4}>
+        <Grid item xs={12}>
+          <PageContentGraph selectedPath={selectedPagePath} data={chartData} isLoading={loading} />
+        </Grid>
+        <Grid item xs={12}>
+          <PageContentTableSummary selectedPath={selectedPagePath} data={tableData.googleData} tableData={googleData} isLoading={loading} />
+        </Grid>
+        <Grid item xs={12}>
+          <PageContentTable selectedPagePath={selectedPagePath} tableData={tableData} onCheckChange={onCheckChange} isLoading={loading} />
+        </Grid>
+      </Grid>
     </>
   );
 }

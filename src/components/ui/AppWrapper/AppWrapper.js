@@ -20,17 +20,17 @@ const Menu = () => (
         <MenuList>
             <MenuItem 
                 component={Link} to="/">
-                <Typography sx={{ fontWeight : "bold" }}>
+                <Typography color="primary" sx={{ fontWeight : "bold" }}>
                     Overview
                 </Typography>
             </MenuItem>
             <MenuItem component={Link} to="/content">
-                <Typography sx={{ fontWeight : "bold" }}>
+                <Typography color="primary"  sx={{ fontWeight : "bold" }}>
                     Pages
                 </Typography>
             </MenuItem>
             <MenuItem component={Link} to="/journey">
-                <Typography sx={{ fontWeight : "bold" }}>
+                <Typography  color="primary"  sx={{ fontWeight : "bold" }}>
                     Journey
                 </Typography>
             </MenuItem>

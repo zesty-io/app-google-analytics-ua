@@ -6,9 +6,8 @@ import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
+import Box from '@mui/material/Box';
 import { useNotify } from '../../context/SnackBarContext';
-import { PageContentTableSummary } from './PageContentTableSummary';
-import { useAnalyticsApi } from '../../services/useAnalyticsApi';
 
 
 export function PageContentTable({ selectedPagePath, onCheckChange, tableData, isLoading = true}) {
