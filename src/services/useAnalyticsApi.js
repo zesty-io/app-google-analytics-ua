@@ -3,6 +3,7 @@ import { request } from "../utility/request";
 export const useAnalyticsApi = (zuid) => {
 
     const dataApiUrl =  `${process.env.REACT_APP_SERVICE_GOOGLE_ANALYTICS_READ}/?zuid=${zuid}`;
+    const domainApiUrl = `${process.env.REACT_APP_SERVICE_GOOGLE_DOMAINS}?zuid=${zuid}`
 
     const getChartData = (googleId, dateRange, type, filters = []) => {
 
@@ -87,6 +88,19 @@ export const useAnalyticsApi = (zuid) => {
 
     }
 
-    return { getChartData, getContentPages }
+    const getGaDomain = () => {
+        return request(
+            domainApiUrl,
+            {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            }
+        );
+    };
+
+
+    return { getChartData, getContentPages, getGaDomain }
 
 }

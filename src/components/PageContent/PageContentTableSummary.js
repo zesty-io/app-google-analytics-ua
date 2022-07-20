@@ -77,7 +77,7 @@ export function PageContentTableSummary({ data, selectedPath, tableData }){
     }
     
     const time = (value) => {
-        return moment.utc(Number(value), 'ss').format('HH:mm:ss')
+        return moment().startOf('day').seconds(Number(value)).format('HH:mm:ss');
     }
 
     const GridItem = (props) => (

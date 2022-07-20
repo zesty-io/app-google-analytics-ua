@@ -11,7 +11,7 @@ export const useFetchWrapper = (zuid, token) => {
     });
 
     const getGoogleSetting = async () => {
-        
+
         const settings = await ZestyAPI.getSettings();
         // if (Object.keys(settings.data).length === 0)
   
@@ -32,7 +32,7 @@ export const useFetchWrapper = (zuid, token) => {
 
     const getUserData = async () => {
 
-        return await ZestyAPI.verify
+        return await ZestyAPI.verify()
 
     }
 
@@ -41,8 +41,6 @@ export const useFetchWrapper = (zuid, token) => {
         return await ZestyAPI.updateSetting(settingZuid, data)
         
     }
-
-
 
     return {
         getGoogleSetting,

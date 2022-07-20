@@ -6,8 +6,9 @@ import PublicIcon from "@mui/icons-material/Public";
 import GaAuthenticate from "./GaAuthenticate";
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
+import Backdrop from '@mui/material/Backdrop';
 
-export const GoogleAuthOverlay = ({ gaLegacyAuth, gaAuthenticated, user, instance }) => {
+export const GoogleAuthOverlay = ({ user, instance, isAuthenticated = true }) => {
 
   const [state, setState] = useState({
     titles: {
@@ -45,18 +46,19 @@ export const GoogleAuthOverlay = ({ gaLegacyAuth, gaAuthenticated, user, instanc
         ",top=" +
         evt.target.offsetTop
     );
-    // var timer = setInterval(function() {
-    //   if (win.closed) {
-    //     clearInterval(timer);
-    //     _ajax.get("/ajax/analytics_store_id.ajax.php", {}, function(response) {
-    //       window.location.reload();
-    //     });
-    //   }
-    // }, 1000);
+
   };
 
     return (
       <>
+       <Backdrop
+        sx={{
+          color: "#fff",
+          zIndex: 20,
+        }}
+        open={!isAuthenticated}
+        onClick={() => {}}
+      >
         <Box
           sx={{
             display : "flex",
@@ -84,32 +86,32 @@ export const GoogleAuthOverlay = ({ gaLegacyAuth, gaAuthenticated, user, instanc
               <FontAwesomeIcon icon={faPlug}/>{" "}<Typography sx={{ marginLeft : '10px' }}>Zesty.io WebEngine™ Integration</Typography>
             </div>
           </Box>
-          <Box
-            sx={{
-              width : '700px',
-              display : 'flex',
-              flexDirection : 'column',
-              justifyItems : 'center',
-              alignItems : 'center'
-            }}>
-          
-            {gaLegacyAuth ? (
-              <>
-                <Typography variant="h5">{state.titles.legacyAuthentication}</Typography>
-                <Typography variant="p" sx={{ fontWeight : '200' }}>{state.descriptions.legacyAuthentication}</Typography>
-              </>
-            ) : (
-              <>
-                <Typography variant="h5">{state.titles.notAuthenticated}</Typography>
-                <Typography variant="p" sx={{ fontWeight : '200' }}>{state.descriptions.notAuthenticated}</Typography>
-              </>
-            )}
+            <Box
+              sx={{
+                width : '700px',
+                display : 'flex',
+                flexDirection : 'column',
+                justifyItems : 'center',
+                alignItems : 'center'
+              }}>
+            
+              {/* {gaLegacyAuth ? (
+                <>
+                  <Typography variant="h5">{state.titles.legacyAuthentication}</Typography>
+                  <Typography variant="p" sx={{ fontWeight : '200' }}>{state.descriptions.legacyAuthentication}</Typography>
+                </>
+              ) : ( */}
+                <>
+                  <Typography variant="h5">{state.titles.notAuthenticated}</Typography>
+                  <Typography variant="p" sx={{ fontWeight : '200' }}>{state.descriptions.notAuthenticated}</Typography>
+                </>
+              {/* )} */}
 
-            {/* Exported this button in order to utilize usePermission hook */}
-            <GaAuthenticate onClick={createAnalyticsPopup} />
-         
+              {/* Exported this button in order to utilize usePermission hook */}
+              <GaAuthenticate onClick={createAnalyticsPopup} />
+          </Box>
         </Box>
-        </Box>
+      </Backdrop>
       </>
    
     );

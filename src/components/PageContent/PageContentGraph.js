@@ -5,6 +5,7 @@ import MetricSelection from "./MetricSelection";
 import Box from '@mui/material/Box'
 import { Typography } from "@mui/material";
 import { useDateRange } from "../../context/DateRangeContext";
+import moment from "moment";
 
 export function PageContentGraph({ selectedPath, data }){
     
@@ -57,6 +58,11 @@ export function PageContentGraph({ selectedPath, data }){
       )
     }
 
+    const formatTicks = (value, index, ticks) => {
+      return value;
+    }
+
+
 
     return (
         <>
@@ -72,6 +78,7 @@ export function PageContentGraph({ selectedPath, data }){
                     // width={500}
                     height={400}
                     options={{
+                      responsive: true,
                       maintainAspectRatio: false,
                       bezierCurve: false,
                       scales: {
@@ -83,15 +90,19 @@ export function PageContentGraph({ selectedPath, data }){
                             id: 'y2',                             
                             type: 'linear',
                             position: 'right',
+                            ticks : {
+                              callback: formatTicks
+                            }
+                        }],
+                        xAxes : [{
+                          ticks : {
+                            callback: function(value, index, ticks) {
+                                return moment(value).format('YYYY-MM-DD');
+                            }
+                          }
                         }]
-                       
                       },
-                      options: {
-                        legend: {
-                          display: true,
-                          position: "bottom",
-                        },
-                      },
+                      
                     }}
                 />
             </GraphContainer>

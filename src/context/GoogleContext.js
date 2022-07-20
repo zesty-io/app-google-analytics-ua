@@ -9,9 +9,11 @@ export function useGoogle(){
 export function GoogleProvider({children}){
     
     const [googleDetails, setGoogleDetails] = useState(null)
+    const [isAuthenticated, setIsAuthenticated] = useState(true)
+
 
     return (
-        <GoogleContext.Provider value={{ googleDetails, setGoogleDetails }}>
+        <GoogleContext.Provider value={{ googleDetails, setGoogleDetails, isAuthenticated, setIsAuthenticated }}>
             {children}
         </GoogleContext.Provider>
     )

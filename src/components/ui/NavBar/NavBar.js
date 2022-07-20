@@ -4,46 +4,52 @@ import DomainPicker from "../DomainPicker/DomainPicker";
 import { Box, Typography } from "@mui/material";
 import { useGoogle } from "../../../context/GoogleContext";
 import { useFetchWrapper } from "../../../services/useFetchWrapper";
+import { useAnalyticsApi } from "../../../services/useAnalyticsApi";
 
 export default function NavBar({ zuid, token }) {
-    const { googleDetails, setGoogleDetails } = useGoogle();
+  const { getGaDomain } = useAnalyticsApi(zuid)
+    const { googleDetails, setGoogleDetails, setIsAuthenticated } = useGoogle();
     const [domainList, setDomainList] = useState([]);
-    const { getGoogleSetting } = useFetchWrapper(zuid, token)
+    const { getGoogleSetting, updateSetting } = useFetchWrapper(zuid, token)
+    const [googleProfile, setGoogleProfile] = useState(null)
 
     useEffect(async () => {
-  
-      const responseDomain = await getGaDomain();
-      const domains = await responseDomain.json();
-      setDomainList(domains.items);
-  
+
+      try{
+        const domains = await getGaDomain();
+        setDomainList(domains.items);
+      }catch(err){
+        console.log(err)
+        setIsAuthenticated(false)
+      }
+    
     }, []);
 
     useEffect(async () => {
-
-      if(domainList.length !== 0){
+      
+      if(domainList && domainList.length !== 0){
 
         const gData = await getGoogleSetting()
         const selectedProfile = domainList.find(domain => domain.defaultProfileId === gData.gaProfile.value)
+        setGoogleProfile(gData)
         setGoogleDetails(selectedProfile)
         
       }
-
     }, [domainList])
 
-    const getGaDomain = () => {
-        return fetch(
-            `${process.env.REACT_APP_SERVICE_GOOGLE_DOMAINS}?zuid=${zuid}`,
-            {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            }
-        );
-    };
+ 
+    const onDomainSelect = async (domain) => {
+      
+      setGoogleDetails(domain)
 
-    const onDomainSelect = (domain) => {
-        setGoogleDetails(domain)
+      var profile = googleProfile.gaProfile
+      var urchin = googleProfile.urchinId
+
+      profile["value"] = domain.defaultProfileId
+      urchin["value"] =  domain.id
+
+      await updateSetting(profile.ZUID, profile);
+      await updateSetting(urchin.ZUID, urchin);
     }
 
   return (
