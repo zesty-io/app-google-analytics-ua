@@ -1,104 +1,65 @@
-import React, { useEffect, useState } from 'react'
-import { useDateRange } from '../../context/DateRangeContext'
-import { useGoogle } from '../../context/GoogleContext'
-import shelldata from '../ui/ShellData/shelldata'
-import { Box } from '@mui/material'
-import { PageContentTable } from './PageContentTable'
-import { PageContentGraph } from './PageContentGraph'
+import React, { useEffect, useState } from "react";
+import { useDateRange } from "../../context/DateRangeContext";
+import { useGoogle } from "../../context/GoogleContext";
+import shelldata from "../ui/ShellData/shelldata";
+import { Box } from "@mui/material";
+import { PageContentTable } from "./PageContentTable";
+import { PageContentGraph } from "./PageContentGraph";
+import { useNotify } from "../../context/SnackBarContext";
+import { useAnalyticsApi } from "../../services/useAnalyticsApi";
+import { PageContentTableSummary } from "./PageContentTableSummary";
 
-export default function PageContent({ instance }){
+export default function PageContent({ instance }) {
 
-    const dateRange = useDateRange()
-    const {googleDetails, setGoogleDetails} = useGoogle()
-    const [selectedPagePath, setSelectedPagePath] = useState([])
-    const [chartData, setChartData] = useState(shelldata.shellBarData)
-    const [googleData, setGoogleData] = useState([])
+  const { getChartData, getContentPages } = useAnalyticsApi(instance.ZUID)
+  const notify = useNotify();
+  const dateRange = useDateRange();
+  const { googleDetails } = useGoogle();
+  const [selectedPagePath, setSelectedPagePath] = useState([]);
+  const [chartData, setChartData] = useState(shelldata.shellBarData);
+  const [googleData, setGoogleData] = useState([]);
+  const [tableData, setTableData] = useState([])
 
-    useEffect(async () => {
+  useEffect(async () => {
+    if (googleDetails) {
 
-        if(googleDetails){
-            let paths = "";
-            if(selectedPagePath.length !== 0){
-                paths = selectedPagePath.map(path => 'ga:pagePath==' + path).join(",")
-            }
-    
-            const response = await getBarChartData(paths)
-            const data = await response.json()
-            console.log(data)
-            setChartData(data.chartJSData)
-            setGoogleData(data.googleData)
-            
-        }
-    }, [googleDetails, selectedPagePath, dateRange])
+      try {
 
+        const data = await getChartData(googleDetails.defaultProfileId, dateRange, "bar", selectedPagePath);
+        const tableData = await getContentPages(googleDetails.defaultProfileId, dateRange)
+        setChartData(data.chartJSData);
+        setTableData(tableData)
+        setGoogleData(data.googleData);
 
-    const onCheckChange = (event, name) => {
-
-        if(event.target.checked) return setSelectedPagePath([...selectedPagePath, name ])
-        setSelectedPagePath(selectedPagePath.filter(site => site !== name))
+      } catch (error) {
         
-    }
+        notify.current.error(error.message);
 
-    const getBarChartData = (paths) => {
-        return fetch(
-          `${process.env.REACT_APP_SERVICE_GOOGLE_ANALYTICS_READ}/?zuid=${instance.ZUID}`,
-          {
-            method: "POST",
-            headers: {
-              "content-type": "text/plain",
-            },
-            body: JSON.stringify({
-              gaRequest: {
-                reportRequests: [
-                  {
-                    viewId: googleDetails.defaultProfileId,
-                    dateRanges: [{ startDate: dateRange.startDate, endDate: dateRange.endDate }],
-                    metrics: [
-                        
-                      { expression: "ga:pageValue" },
-                      { expression: "ga:exitRate" },
-                      { expression: "ga:bounceRate" },
-                      { expression: "ga:entrances" },
-                      { expression: "ga:avgTimeOnPage" },
-                      { expression: "ga:uniquePageviews" },
-                      { expression: "ga:pageViews" },
-                      
-                    ],
-                    dimensions: [
-                        { name: "ga:date" },
-                    ],
-                    orderBys: [
-                      {
-                        fieldName: "ga:pageViews",
-                        sortOrder: "DESCENDING",
-                      },
-                    ],
-                    filtersExpression : paths
-                  },
-                ],
-              },
-              type: "bar",
-            }),
-          }
-        );
       }
+    }
+  }, [googleDetails, selectedPagePath, dateRange]);
 
-    return (
-        <>
-            <Box sx={{ 
-                display : "flex",
-                gap : 4,
-                flexDirection : "column",
-            }}>
-                <PageContentGraph selectedPath={selectedPagePath} data={chartData} />
-                <PageContentTable 
-                    zuid={instance.ZUID} 
-                    selectedPagePath={selectedPagePath} 
-                    dateRange={dateRange} 
-                    googleDetails={googleDetails} 
-                    onCheckChange={onCheckChange}
-                    chartData={googleData} />
-            </Box>
-        </>
-    )
+  const onCheckChange = (event, name) => {
+    if (event.target.checked)
+      return setSelectedPagePath([...selectedPagePath, name]);
+    setSelectedPagePath(selectedPagePath.filter((site) => site !== name));
+  };
+
+  return (
+    <>
+      <Box
+        sx={{
+          display: "flex",
+          gap: 4,
+          flexDirection: "column",
+        }}
+      >
+        
+        <PageContentGraph selectedPath={selectedPagePath} data={chartData} />
+        <PageContentTableSummary selectedPath={selectedPagePath} data={tableData.googleData} tableData={googleData} />
+        <PageContentTable selectedPagePath={selectedPagePath} tableData={tableData} onCheckChange={onCheckChange} />
+          
+      </Box>
+    </>
+  );
 }

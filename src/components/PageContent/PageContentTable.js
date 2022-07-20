@@ -8,28 +8,25 @@ import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import { useNotify } from '../../context/SnackBarContext';
 import { PageContentTableSummary } from './PageContentTableSummary';
+import { useAnalyticsApi } from '../../services/useAnalyticsApi';
 
 
-export function PageContentTable({ zuid, selectedPagePath, onCheckChange, googleDetails, dateRange, chartData}) {
+export function PageContentTable({ selectedPagePath, onCheckChange, tableData}) {
 
   const notify = useNotify()
   const [headers, setHeaders] = useState([])
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(false)
-  const [googleData, setGoogleData] = useState([])
 
   useEffect(async () => {
 
-    if(googleDetails){
+    if(tableData.length !== 0){
+
       try{
-        setLoading(true)
-        const result = await getTopTenContent()
         
-        if(!result.ok) throw result
-  
-        const json = await result.json()
-        setGoogleData(json.googleData)
-        const truncatedData = json.tableData.data.map((row) => {
+        setLoading(true)
+       
+        const truncatedData = tableData.tableData.data.map((row) => {
           return row.map((col) => {
             // will not attempt conversion on a path
             if (Number(col)) {
@@ -40,61 +37,20 @@ export function PageContentTable({ zuid, selectedPagePath, onCheckChange, google
           });
         });
         
-        setHeaders(json.tableData.headers)
+        setHeaders(tableData.tableData.headers)
         setData(truncatedData)
         setLoading(false)
-      }catch(err){
-        console.log(err)
+
+      }catch(error){
         setLoading(false)
-        return notify.current.error(err)
+        notify.current.error(error.message)
       }
       
     }
-  }, [googleDetails, dateRange])
+  }, [tableData, selectedPagePath])
 
-  const getTopTenContent = () => {
-    return fetch(
-      `${process.env.REACT_APP_SERVICE_GOOGLE_ANALYTICS_READ}/?zuid=${zuid}`,
-      {
-        method: "POST",
-        headers: {
-          "content-type": "text/plain",
-        },
-        body: JSON.stringify({
-          gaRequest: {
-            reportRequests: [
-              {
-                viewId: googleDetails.defaultProfileId,
-                dateRanges: [{ startDate: dateRange.startDate, endDate: dateRange.endDate }],
-                metrics: [
-                    { expression: "ga:pageValue" },
-                    { expression: "ga:exitRate" },
-                    { expression: "ga:bounceRate" },
-                    { expression: "ga:entrances" },
-                    { expression: "ga:avgTimeOnPage" },
-                    { expression: "ga:uniquePageviews" },
-                    { expression: "ga:pageViews" },
-                ],
-                dimensions: [{ name: "ga:pagePath" }],
-                orderBys: [
-                  {
-                    fieldName: "ga:pageViews",
-                    sortOrder: "DESCENDING",
-                  },
-                ],
-                pageSize: 10,
-              },
-            ],
-          },
-          type: "bar",
-        }),
-      }
-    );
-  }
-  
     return (
       <>
-      <PageContentTableSummary data={googleData} selectedPath={selectedPagePath} chartData={chartData} />
       <GraphContainer title="Pages" loading={loading} >
         
           {headers.length && data.length ? (

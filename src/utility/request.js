@@ -1,9 +1,10 @@
-export const request = (url, option) => {
+export const request = async (url, option) => {
 
-    return fetch(url, option).then(result => {
-        return result.json()
-    }).catch(error => {
-        throw error
-    })
+    const response = await fetch(url, option);
+    const result = await response.json()
+
+    if(!response.ok) throw new Error(result.error)
+
+    return result;
 
 }

@@ -8,20 +8,20 @@ import {
 import { useEffect, useState } from 'react'
 import moment from 'moment'
 
-export function PageContentTableSummary({ data, selectedPath, chartData }){
+export function PageContentTableSummary({ data, selectedPath, tableData }){
 
     const [summaryData, setSummaryData] = useState([]) 
     const [formatSelectedData, setFormatSeletedData] = useState([])
 
     useEffect(() => {
 
-        if(data.length !== 0){
+        if(tableData.length !== 0){
 
             let result = []
             let formatChartData = null
             // const returnData = formatData(selectedPath.length === 0 ? data : chartData)
             const returnData = formatData(data)
-            if(selectedPath.length !== 0) formatChartData = formatData(chartData)
+            if(selectedPath.length !== 0) formatChartData = formatData(tableData)
             
             returnData.forEach((value, i) => {
                 result.push({
@@ -34,7 +34,7 @@ export function PageContentTableSummary({ data, selectedPath, chartData }){
 
         }
         
-    }, [chartData, selectedPath, data])
+    }, [tableData, selectedPath, data])
 
     const formatHeaderText = (text) => {
         return text.replace("ga:", "").replace(/([A-Z])/g, ' $1').trim().toUpperCase()
@@ -46,10 +46,6 @@ export function PageContentTableSummary({ data, selectedPath, chartData }){
 
         var metricHeader = data.reports[0].columnHeader.metricHeader.metricHeaderEntries.map(metric => formatHeaderText(metric.name));
         var metricData = data.reports[0].data.totals[0].values.map((value, i) => {
-
-            // if(i == 4) return moment.utc(Number(value), 'ss').format('HH:mm:ss') // Format to time
-            // if(i == 0) return Number(Math.round(value + "e" + 2) + "e-" + 2) + '$' // add percentage
-            // if([1,2].includes(i)) return Number(Math.round(value + "e" + 2) + "e-" + 2) + '%'
 
             return Number(Math.round(value + "e" + 2) + "e-" + 2)
         })
@@ -70,7 +66,14 @@ export function PageContentTableSummary({ data, selectedPath, chartData }){
         
         if(num1 == 0 || num2 == 0) return 0
 
-        return Math.round((Number(num1) / Number(num2)) * 100)
+        var startPos = 0
+        var endPos = Number(num1)
+        var currentPos = Number(num2)
+
+        var distance = endPos - startPos;
+        var displacement = currentPos - startPos;
+
+        return Math.round((displacement / distance) * 100)
     }
     
     const time = (value) => {
@@ -83,7 +86,7 @@ export function PageContentTableSummary({ data, selectedPath, chartData }){
                 <Typography sx={{ fontWeight : "bold", fontSize:"10pt", color : '#5b667d' }}>{props.label}</Typography>    
                 <Box sx={{ marginTop : "5px"}}>
                     <Typography sx={{ fontSize : "18pt", fontWeight : "bold", marginBottom : "5px" }}>{props.selectedValue !== null ? props.selectedValue : props.data}</Typography>
-                    <Typography sx={{ fontSize : "10pt" }}>{`% of Total : ${avg(props.selectedValue, props.data)}%`}</Typography>
+                    <Typography sx={{ fontSize : "10pt" }}>{`% of Total : ${avg(props.data, props.selectedValue)}%`}</Typography>
                     <Typography sx={{ fontSize : "10pt", color : '#5b667d' }}>{`(${props.data})`}</Typography>
                 </Box>
             </Grid>
@@ -98,7 +101,7 @@ export function PageContentTableSummary({ data, selectedPath, chartData }){
                 <Box sx={{ marginTop : "5px"}}>
                     <Typography sx={{ fontSize : "18pt", fontWeight : "bold", marginBottom : "5px" }}>{time(props.selectedValue !== null ? props.selectedValue : props.data)}</Typography>
                     <Typography sx={{ fontSize : "10pt" }}>{`Avg for view: ${time(props.data)}`}</Typography>
-                    <Typography sx={{ fontSize : "10pt", color : '#5b667d' }}>{`( ${avg(props.selectedValue, props.data)}%)`}</Typography>
+                    <Typography sx={{ fontSize : "10pt", color : '#5b667d' }}>{`( ${avg(props.data, props.selectedValue)}%)`}</Typography>
                 </Box>
             </Grid>
             <Divider orientation="vertical" flexItem/>

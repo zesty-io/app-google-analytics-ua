@@ -37,20 +37,19 @@ const Menu = () => (
 export default function AppWrapper(props){
     return (
         <Box p={4}>
-           
            <NavBar zuid={props.instance.ZUID} token={props.token}/>
            <Router>
                 <Box sx={{ display : "flex", gap : 4 }}>
-                        <Box>
-                            <Menu />
-                        </Box>
-                        <Box sx={{ flexGrow : 1 }}>
-                            <Routes>
-                                <Route path="/" element={<Overview {...props} />} />
-                                <Route path="/content" element={<PageContent {...props} />} />
-                                <Route path="/journey" element={<Journey {...props} />} />
-                            </Routes>
-                        </Box>
+                    <Box>
+                        <Menu />
+                    </Box>
+                    <Box sx={{ flexGrow : 1 }}>
+                        <Routes>
+                            <Route path="/" element={<Overview {...props} />} />
+                            <Route path="/content" element={<PageContent {...props} />} />
+                            <Route path="/journey" element={<Journey {...props} />} />
+                        </Routes>
+                    </Box>
                 </Box>
             </Router>
             

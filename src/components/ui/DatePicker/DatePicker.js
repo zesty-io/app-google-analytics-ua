@@ -12,6 +12,7 @@ import Typography from '@mui/material/Typography'
 import moment from 'moment'
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import { useDateRange, useDateRangeUpdate } from '../../../context/DateRangeContext'
+import EastIcon from '@mui/icons-material/East';
 
 export function CustomDatePicker(){
     const dateRange = useDateRange()
@@ -95,7 +96,13 @@ export function CustomDatePicker(){
     return (
         <>
             <Box sx={{ display : "flex", alignItems : "center", justifyContent : "center", gap : 4 }}>
-                <Typography variant="body2" sx={{ color: "#5b667d", fontWeight : "bold" }}>{dateRange.startDate + " - " + dateRange.endDate}</Typography>
+                <Typography variant="body2" sx={{ 
+                        color: "#5b667d", 
+                        fontWeight : "bold", 
+                        display : "flex", 
+                        alignItems : "center", 
+                        gap : 2 
+                }}>{dateRange.startDate} <EastIcon /> {dateRange.endDate}</Typography>
                 <Button aria-describedby={id} variant="contained" onClick={handleClick} color="secondary" startIcon={<CalendarMonthIcon />}>
                     Change Date Range
                 </Button>

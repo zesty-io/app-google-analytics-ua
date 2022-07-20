@@ -1,14 +1,13 @@
 import GraphContainer from "../ui/GraphContainer";
 import { Line } from "react-chartjs-2"
 import { useEffect, useState } from "react";
-import shelldata from "../ui/ShellData/shelldata";
 import MetricSelection from "./MetricSelection";
 import Box from '@mui/material/Box'
 import { Typography } from "@mui/material";
 import { useDateRange } from "../../context/DateRangeContext";
 
 export function PageContentGraph({ selectedPath, data }){
-
+    
     const dateRange = useDateRange()
     const [selectedMetricsY1, setSelectedMetricsY1] = useState(null)
     const [selectedMetricsY2, setSelectedMetricsY2] = useState(null)
@@ -95,9 +94,7 @@ export function PageContentGraph({ selectedPath, data }){
                       },
                     }}
                 />
-                
             </GraphContainer>
         </>
     )
-
 }

@@ -11,6 +11,7 @@ export const useFetchWrapper = (zuid, token) => {
     });
 
     const getGoogleSetting = async () => {
+        
         const settings = await ZestyAPI.getSettings();
         // if (Object.keys(settings.data).length === 0)
   
