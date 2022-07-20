@@ -1,6 +1,6 @@
 
 
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Link, Redirect } from 'react-router-dom'
 import { Box } from '@mui/material'
 import Overview from '../../Overview'
 import PageContent from '../../PageContent'
@@ -57,7 +57,7 @@ export default function AppWrapper(props){
         <Box p={4}>
             <GoogleAuthOverlay user={userId} instance={props.instance} isAuthenticated={isAuthenticated} />
            <NavBar zuid={props.instance.ZUID} token={props.token}/>
-           <Router>
+           <Router basename="/google-analytics">
                 <Box sx={{ display : "flex", gap : 4 }}>
                     <Box>
                         <Menu />
