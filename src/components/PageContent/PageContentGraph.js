@@ -7,7 +7,7 @@ import { Typography } from "@mui/material";
 import { useDateRange } from "../../context/DateRangeContext";
 import moment from "moment";
 
-export function PageContentGraph({ selectedPath, data }){
+export function PageContentGraph({ selectedPath, data, isLoading = true }){
     
     const dateRange = useDateRange()
     const [selectedMetricsY1, setSelectedMetricsY1] = useState(null)
@@ -58,7 +58,21 @@ export function PageContentGraph({ selectedPath, data }){
       )
     }
 
-    const formatTicks = (value, index, ticks) => {
+    const formatTicksY2 = (value, index, ticks) => {
+      if(!selectedMetricsY2) return;
+      if(selectedMetricsY2.includes("Time")) return moment().startOf('day').seconds(Number(value)).format('HH:mm:ss');
+      if(selectedMetricsY2.includes("Rate")) return value + "%";
+      if(selectedMetricsY2.includes("Value")) return value + "$";
+
+      return value;
+    }
+
+    const formatTicksY1 = (value, index, ticks) => {
+      if(!selectedMetricsY1) return;
+      if(selectedMetricsY1.includes("Time")) return moment().startOf('day').seconds(Number(value)).format('HH:mm:ss');
+      if(selectedMetricsY1.includes("Rate")) return value + "%";
+      if(selectedMetricsY1.includes("Value")) return value + "$";
+
       return value;
     }
 
@@ -66,7 +80,7 @@ export function PageContentGraph({ selectedPath, data }){
 
     return (
         <>
-            <GraphContainer title="Metric" subTitle={dateRange.selectedItem} rightMenu={<MetricSelectionComponent />}>
+            <GraphContainer title="Metric" loading={isLoading} subTitle={dateRange.selectedItem} rightMenu={<MetricSelectionComponent />}>
                 <Line
                     data={{
                         labels : data.labels,
@@ -86,12 +100,15 @@ export function PageContentGraph({ selectedPath, data }){
                             id: 'y1',                             
                             type: 'linear',
                             position: 'left',
+                            ticks : {
+                              callback: formatTicksY1
+                            }
                         }, {
                             id: 'y2',                             
                             type: 'linear',
                             position: 'right',
                             ticks : {
-                              callback: formatTicks
+                              callback: formatTicksY2
                             }
                         }],
                         xAxes : [{

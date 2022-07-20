@@ -18,6 +18,7 @@ export default function NavBar({ zuid, token }) {
       try{
         const domains = await getGaDomain();
         setDomainList(domains.items);
+        setIsAuthenticated(true)
       }catch(err){
         console.log(err)
         setIsAuthenticated(false)
@@ -39,7 +40,7 @@ export default function NavBar({ zuid, token }) {
 
  
     const onDomainSelect = async (domain) => {
-      
+
       setGoogleDetails(domain)
 
       var profile = googleProfile.gaProfile

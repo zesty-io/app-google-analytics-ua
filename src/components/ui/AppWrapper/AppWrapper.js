@@ -38,7 +38,6 @@ const Menu = () => (
     </Paper>
 )
 
-//https://us-central1-zesty-prod.cloudfunctions.net/authenticateGoogleAnalytics?user_id=21478568&account_id=8355176
 
 export default function AppWrapper(props){
 

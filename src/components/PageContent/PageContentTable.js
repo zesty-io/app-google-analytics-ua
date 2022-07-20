@@ -11,7 +11,7 @@ import { PageContentTableSummary } from './PageContentTableSummary';
 import { useAnalyticsApi } from '../../services/useAnalyticsApi';
 
 
-export function PageContentTable({ selectedPagePath, onCheckChange, tableData}) {
+export function PageContentTable({ selectedPagePath, onCheckChange, tableData, isLoading = true}) {
 
   const notify = useNotify()
   const [headers, setHeaders] = useState([])
@@ -24,7 +24,6 @@ export function PageContentTable({ selectedPagePath, onCheckChange, tableData}) 
 
       try{
         
-        setLoading(true)
        
         const truncatedData = tableData.tableData.data.map((row) => {
           return row.map((col) => {
@@ -39,7 +38,6 @@ export function PageContentTable({ selectedPagePath, onCheckChange, tableData}) 
         
         setHeaders(tableData.tableData.headers)
         setData(truncatedData)
-        setLoading(false)
 
       }catch(error){
         setLoading(false)
@@ -51,7 +49,7 @@ export function PageContentTable({ selectedPagePath, onCheckChange, tableData}) 
 
     return (
       <>
-      <GraphContainer title="Pages" loading={loading} >
+      <GraphContainer title="Pages" loading={isLoading} >
         
           {headers.length && data.length ? (
               
