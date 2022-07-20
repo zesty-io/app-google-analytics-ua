@@ -1,29 +1,36 @@
 import React, { useEffect, useState } from 'react'
 import { Line } from "react-chartjs-2";
-import BarChartOutlinedIcon from '@mui/icons-material/BarChartOutlined';
-import GraphContainer from '../../../ui/GraphContainer';
-import { useDateRange } from '../../../../context/DateRangeContext';
+import GraphContainer from '../ui/GraphContainer';
+import { useNotify } from '../../context/SnackBarContext';
 
-export const PageviewTraffic = ({ setGALegacyStatus, instanceZUID, profileID, data, domainSet }) => {
+export const PageviewTraffic = ({ instanceZUID, googleDetails, dateRange, data }) => {
     
-    const dateRange = useDateRange()
-
+    const notify = useNotify()
     const [chartData, setChartData] = useState(data)
     const [loading, setLoading] = useState(false)
 
     useEffect(async () => {
       
-      if(profileID !== null){
-        setLoading(true)
-        const result = await getBarChartData()
-        if(!result.ok) return setGALegacyStatus(true)
-        const data = await result.json()
-        setChartData(data.chartJSData)
-        setGALegacyStatus(false)
-        setLoading(false)
+      if(googleDetails){
+
+        try{
+
+          setLoading(true)
+          const result = await getBarChartData()
+          if(!result.ok) throw result
+          const data = await result.json()
+          setChartData(data.chartJSData)
+          setLoading(false)
+
+        }catch(err){
+          const error = await err.json()
+          setLoading(false)
+          return notify.current.error(error.error)
+        }
+        
       }
 
-    }, [profileID, dateRange])
+    }, [googleDetails, dateRange])
 
     const getBarChartData = () => {
 
@@ -37,7 +44,7 @@ export const PageviewTraffic = ({ setGALegacyStatus, instanceZUID, profileID, da
             gaRequest: {
               reportRequests: [
                 {
-                  viewId: profileID,
+                  viewId: googleDetails.defaultProfileId,
                   dateRanges: [
                     {
                       startDate: dateRange.startDate,

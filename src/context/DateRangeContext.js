@@ -1,6 +1,6 @@
 
 import React, { useState, useContext } from 'react'
-
+import moment from 'moment'
 
 const DateRangeContext = React.createContext()
 const DateRangeUpdateContext = React.createContext()
@@ -17,8 +17,8 @@ export function DateRangeProvider({ children }){
 
     const [dateRange, setDateRange] = useState({
         selectedItem : "Last 30 Days",
-        startDate : "30daysAgo",
-        endDate : "today"
+        startDate : moment().subtract(30, "days").startOf("month").format("YYYY-MM-DD"),
+        endDate : moment().format("YYYY-MM-DD"),
     })
 
     const updateDateRange = (date) => setDateRange(date)

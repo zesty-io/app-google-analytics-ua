@@ -1,26 +1,34 @@
 import React, { useState, useEffect } from 'react'
 import { Doughnut } from "react-chartjs-2";
-import GraphContainer from '../../../ui/GraphContainer';
-import { useDateRange } from '../../../../context/DateRangeContext';
+import GraphContainer from '../ui/GraphContainer';
+import { useNotify } from '../../context/SnackBarContext';
 
-export const SocialTraffic = ({ setGALegacyStatus, instanceZUID, profileID, data }) => {
+export const SocialTraffic = ({ instanceZUID, googleDetails, dateRange ,data }) => {
 
-  const dateRange = useDateRange()
+  const notify = useNotify()
   const [chartData, setChartData] = useState(data)
   const [loading, setLoading] = useState(false)
 
   useEffect(async () => {
 
-    if(profileID !== null){
-      setLoading(true)
-      const result = await getSocialTraffic()
-      if(!result.ok) return setGALegacyStatus(true)
-      const data = await result.json()
-      setChartData(data.chartJSData)
-      setLoading(false)
+    if(googleDetails){
+
+      try{
+        setLoading(true)
+        const result = await getSocialTraffic()
+        if(!result.ok) throw result
+        const data = await result.json()
+        setChartData(data.chartJSData)
+        setLoading(false)
+      }catch(error){
+        const err = await error.json()
+        setLoading(false)
+        return notify.current.error(err.error)
+      }
+     
     }
 
-  }, [profileID, dateRange])
+  }, [googleDetails, dateRange])
 
   const getSocialTraffic = () => {
     return fetch(
@@ -35,7 +43,7 @@ export const SocialTraffic = ({ setGALegacyStatus, instanceZUID, profileID, data
           gaRequest: {
             reportRequests: [
               {
-                viewId: profileID,
+                viewId: googleDetails.defaultProfileId,
                 dateRanges: [{ startDate: dateRange.startDate, endDate: dateRange.endDate }],
                 metrics: [{ expression: "ga:sessions" }],
                 dimensions: [{ name: "ga:socialNetwork" }],

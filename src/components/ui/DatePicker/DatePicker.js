@@ -8,11 +8,13 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select'
 import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
 import moment from 'moment'
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import { useDateRange, useDateRangeUpdate } from '../../../context/DateRangeContext'
+import EastIcon from '@mui/icons-material/East';
 
 export function CustomDatePicker(){
-
     const dateRange = useDateRange()
     const dateRangeUpdate = useDateRangeUpdate()
 
@@ -93,9 +95,19 @@ export function CustomDatePicker(){
 
     return (
         <>
-            <Button aria-describedby={id} variant="contained" onClick={handleClick} color="secondary">
-                Change Date Range
-            </Button>
+            <Box sx={{ display : "flex", alignItems : "center", justifyContent : "center", gap : 4 }}>
+                <Typography variant="body2" sx={{ 
+                        color: "#5b667d", 
+                        fontWeight : "bold", 
+                        display : "flex", 
+                        alignItems : "center", 
+                        gap : 2 
+                }}>{dateRange.startDate} <EastIcon /> {dateRange.endDate}</Typography>
+                <Button aria-describedby={id} variant="contained" onClick={handleClick} color="secondary" startIcon={<CalendarMonthIcon />}>
+                    Change Date Range
+                </Button>
+            </Box>
+           
             <Popover
                 id={id}
                 open={open}
@@ -142,8 +154,9 @@ export function CustomDatePicker(){
                                 onBlur={onDateChange}
                                 inputProps={{
                                     max : dateRange.endDate,
-                                    required : true
+                                    required : true,
                                 }}
+                                
                             />
                             <TextField
                                 name="endDate"

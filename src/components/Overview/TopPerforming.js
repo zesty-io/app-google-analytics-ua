@@ -1,45 +1,52 @@
 import { useState, useEffect } from 'react'
-import GraphContainer from '../../../ui/GraphContainer'; 
+import GraphContainer from '../ui/GraphContainer';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { useDateRange } from '../../../../context/DateRangeContext';
+import { useNotify } from '../../context/SnackBarContext';
 
 
-export function TopPerforming({ profileID, instanceZUID }) {
+export function TopPerforming({ googleDetails, dateRange, instanceZUID }) {
 
-  const dateRange = useDateRange()  
+  const notify = useNotify()
   const [headers, setHeaders] = useState([])
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(false)
 
   useEffect(async () => {
 
-    if(profileID !== null){
-      setLoading(true)
-      const result = await getTopTenContent()
-      
-      if(!result.ok) return setLoading(false)
-
-      const json = await result.json()
-      const truncatedData = json.tableData.data.map((row) => {
-        return row.map((col) => {
-          // will not attempt conversion on a path
-          if (Number(col)) {
-            return Number(Math.round(col + "e" + 2) + "e-" + 2);
-          } else {
-            return col;
-          }
+    if(googleDetails){
+      try{
+        setLoading(true)
+        const result = await getTopTenContent()
+        
+        if(!result.ok) throw result
+  
+        const json = await result.json()
+        const truncatedData = json.tableData.data.map((row) => {
+          return row.map((col) => {
+            // will not attempt conversion on a path
+            if (Number(col)) {
+              return Number(Math.round(col + "e" + 2) + "e-" + 2);
+            } else {
+              return col;
+            }
+          });
         });
-      });
-
-      setHeaders(json.tableData.headers)
-      setData(truncatedData)
-      setLoading(false)
+  
+        setHeaders(json.tableData.headers)
+        setData(truncatedData)
+        setLoading(false)
+      }catch(err){
+        const error = await err.json()
+        setLoading(false)
+        return notify.current.error(error.error)
+      }
+      
     }
-  }, [profileID, dateRange])
+  }, [googleDetails, dateRange])
 
   const getTopTenContent = () => {
     return fetch(
@@ -53,7 +60,7 @@ export function TopPerforming({ profileID, instanceZUID }) {
           gaRequest: {
             reportRequests: [
               {
-                viewId: profileID,
+                viewId: googleDetails.defaultProfileId,
                 dateRanges: [{ startDate: dateRange.startDate, endDate: dateRange.endDate }],
                 metrics: [
                   { expression: "ga:sessions" },

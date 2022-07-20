@@ -1,26 +1,36 @@
 import React, {useEffect, useState} from 'react' 
 import { Doughnut } from "react-chartjs-2";
-import GraphContainer from '../../../ui/GraphContainer';
-import { useDateRange } from '../../../../context/DateRangeContext';
+import GraphContainer from '../ui/GraphContainer';
+import { useNotify } from '../../context/SnackBarContext';
 
-export const InboundTraffic = ({ data, setGALegacyStatus, instanceZUID, profileID}) => {
+export const InboundTraffic = ({ data, instanceZUID, googleDetails, dateRange}) => {
 
-    const dateRange = useDateRange()
+    const notify = useNotify()
     const [chartData, setChartData] = useState(data)
     const [loading, setLoading] = useState(false)
+
     useEffect(async () => {
-      if (profileID !== null) {
-        setLoading(true)
-        const result = await getInboundTraffic()
+      if (googleDetails) {
 
-        if(!result.ok) return setGALegacyStatus(true)
+        try{
+          setLoading(true)
+          const result = await getInboundTraffic()
+  
+          if(!result.ok) throw result 
+  
+          const data = await result.json()
+          setChartData(data.chartJSData)
+          setLoading(false)
 
-        const data = await result.json()
+        }catch(err){
+          const error = await err.json()
+          setLoading(false)
+          return notify.current.error(error.error)
+        }
+       
 
-        setChartData(data.chartJSData)
-        setLoading(false)
       }
-    }, [profileID, dateRange])
+    }, [googleDetails, dateRange])
 
     const getInboundTraffic = () => {
       return fetch(
@@ -35,7 +45,7 @@ export const InboundTraffic = ({ data, setGALegacyStatus, instanceZUID, profileI
             gaRequest: {
               reportRequests: [
                 {
-                  viewId: profileID,
+                  viewId: googleDetails.defaultProfileId,
                   dateRanges: [{ startDate: dateRange.startDate, endDate: dateRange.endDate }],
                   metrics: [{ expression: "ga:sessions" }],
                   dimensions: [{ name: "ga:medium" }],
