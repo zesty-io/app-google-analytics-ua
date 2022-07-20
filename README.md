@@ -13,7 +13,7 @@ A marketplace application that integrates to Google Analytics
 -   get instance ZUID and set `REACT_APP_ZUID` in .env
 -   get instance ID and set `REACT_APP_INSTANCE_ID` in .env
 -   `npm start`
-    -   Will open up http://localhost:3000/app-google-analytics or open [http://test.zesty.oi:3000](http://test.zesty.oi:3000) so you can connect with API.
+    -   Will open up http://localhost:3000/google-analytics or open [http://test.zesty.oi:3000/google-analytics](http://test.zesty.oi:3000/google-analytics) so you can connect with API.
 -   Have fun!
 
 # Authorizing request using OAuth2
