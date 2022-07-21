@@ -20,7 +20,7 @@ export default function PageContent({ instance }) {
   const [chartData, setChartData] = useState(shelldata.shellBarData);
   const [googleData, setGoogleData] = useState([]);
   const [tableData, setTableData] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
 
   useEffect(async () => {
     if (googleDetails) {
