@@ -16,7 +16,13 @@ import { useEffect, useState } from 'react'
 import { useFetchWrapper } from '../../../services/useFetchWrapper'
 
 const Menu = () => (
-    <Paper sx={{ width: 250, maxWidth: '100%' }}>
+    <Paper sx={{ 
+            width: 250, 
+            maxWidth: '100%', 
+            position : "sticky",
+            position: "-webkit-sticky",
+            top: 0,
+        }}>
         <MenuList>
             <MenuItem 
                 component={Link} to="/">
@@ -54,9 +60,13 @@ export default function AppWrapper(props){
     }, [])
 
     return (
-        <Box p={4}>
+        <>
+        <NavBar zuid={props.instance.ZUID} token={props.token}/>
+        <Box sx={{
+            p : 4,
+            marginTop: 10
+        }}>
             <GoogleAuthOverlay user={userId} instance={props.instance} isAuthenticated={isAuthenticated} />
-           <NavBar zuid={props.instance.ZUID} token={props.token}/>
            <Router basename="/google-analytics">
                 <Box sx={{ display : "flex", gap : 4 }}>
                     <Box>
@@ -73,5 +83,6 @@ export default function AppWrapper(props){
             </Router>
             
         </Box>
+        </>
     )
 }
