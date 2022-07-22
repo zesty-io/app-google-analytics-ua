@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { TextField, InputAdornment, Popper, Paper,Autocomplete, Box, Typography, Divider } from "@mui/material"
 import SearchIcon from '@mui/icons-material/Search';
 import SearchBarFilterMenu from './SearchBarFilterMenu';
@@ -8,7 +8,6 @@ import { useFetchWrapper } from '../../../services/useFetchWrapper';
 export default function SearchBar({ zuid, token }){
 
     const { searchItems } = useFetchWrapper(zuid, token)
-    const [search, setSearch] = useState("")
     const [isTyping, setIsTyping] = useState(false)
     const [anchor, setAnchorEl] = useState(null);
     const [data, setData] = useState(null)
@@ -20,42 +19,36 @@ export default function SearchBar({ zuid, token }){
     };
     const id = "popperMenu";
 
-    useEffect(() => {
-        setIsTyping(true)
-        if(search === '') {
-            setData(null)
-            setIsTyping(false)
-            return;
-        }
-
-        const delayDebounce = setTimeout(async () => {
-            
-            const result = await searchItems(search)
-            setData(result.data)
-            setIsTyping(false)
-        }, 2000)
-
-        
-        return () => clearTimeout(delayDebounce)
-
-    }, [search])
-
-    const onChange = async (event) => {
-        
-        const filterItem = event.target.value
-        console.log(filterItem)
-        
-        if(filterItem === '') return setData(null)
-
-        const result = await searchItems(filterItem)
-        console.log(result.data)
-        setData(result.data)
-
-    }
-
     const onMenuClick = (data) => {
         console.log(data)
     }
+
+    const handleChange = async (event) => {
+        setIsTyping(true)
+        const searchItem = event.target.value
+        if(searchItem === "") {
+            setData(null) 
+            setIsTyping(false)
+            return 
+        }
+        const result = await searchItems(searchItem)
+        setData(result.data)
+        setIsTyping(false)
+    }
+
+    const debounce = (func) => {
+        let timer;
+        return function (...args){
+            const context = this;
+            if(timer) clearTimeout(timer)
+            timer = setTimeout(() => {
+                timer = null
+                func.apply(context, args)
+            }, 500)
+        }
+    }
+
+    const optimizeSearch = useCallback(debounce(handleChange), [])
 
     return (
         <>
@@ -69,7 +62,7 @@ export default function SearchBar({ zuid, token }){
                     placeholder="Search Pages"
                     onFocus={focus}
                     onBlur={blur}
-                    onChange={(event) => setSearch(event.target.value)}
+                    onChange={optimizeSearch}
                     inputProps={{
                         autoComplete: 'off'
                      }}
