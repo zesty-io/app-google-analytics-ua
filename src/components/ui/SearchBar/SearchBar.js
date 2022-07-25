@@ -14,11 +14,6 @@ export default function SearchBar({ zuid, token }){
     const [isTyping, setIsTyping] = useState(false)
     const [anchor, setAnchorEl] = useState(null);
     const [data, setData] = useState(null)
-    const [textInput, setTextInput] = useState("")
-
-    useEffect(() => {
-
-    }, [])
 
     const focus = event => {
         setAnchorEl(event.currentTarget);
@@ -36,6 +31,7 @@ export default function SearchBar({ zuid, token }){
     const handleChange = async (event) => {
         setIsTyping(true)
         const searchItem = event.target.value
+
         if(searchItem === "") {
             setData(null) 
             setIsTyping(false)
@@ -44,6 +40,12 @@ export default function SearchBar({ zuid, token }){
         const result = await searchItems(searchItem)
         setData(result.data)
         setIsTyping(false)
+    }
+
+    const formatResult = (result) => {
+
+        return result.data.filter(value => value.web.path !== null).map(value => value.web)
+
     }
 
     const debounce = (func) => {
@@ -64,7 +66,7 @@ export default function SearchBar({ zuid, token }){
         <>
             <Box>
                 <ClickAwayListener onClickAway={handleClose}>
-                    <Box>
+                    <span>
                         <TextField
                             sx={{
                                 width : "600px"
@@ -86,7 +88,7 @@ export default function SearchBar({ zuid, token }){
                             disablePortal>
                             <SearchBarFilterMenu data={data} isTyping={isTyping} onMenuClick={onMenuClick} />
                         </Popper>
-                    </Box>
+                    </span>
                 </ClickAwayListener>
             </Box>
         </>
