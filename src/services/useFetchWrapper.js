@@ -42,10 +42,25 @@ export const useFetchWrapper = (zuid, token) => {
         
     }
 
+    const searchItems = async (filter) => {
+
+        const result = await fetch(`https://${zuid + process.env.REACT_APP_INSTANCE_API}/search/items?q=${filter}&order=created&dir=DESC`, {
+            method : "GET",
+            headers : {
+                "Content-type" : "application/json",
+                "Authorization": `Bearer ${token}`,
+            }
+        })
+        const data = await result.json()
+        console.log(data)
+        return data
+    }
+
     return {
         getGoogleSetting,
         getUserData,
-        updateSetting
+        updateSetting,
+        searchItems
     }
 
 }

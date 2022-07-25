@@ -8,10 +8,12 @@ import { PageContentGraph } from "./PageContentGraph";
 import { useNotify } from "../../context/SnackBarContext";
 import { useAnalyticsApi } from "../../services/useAnalyticsApi";
 import { PageContentTableSummary } from "./PageContentTableSummary";
+import { useSearchParams } from "react-router-dom";
 import Grid from '@mui/material/Grid'
 
 export default function PageContent({ instance }) {
 
+  const [searchParams, setSearchParams] = useSearchParams();
   const { getChartData, getContentPages } = useAnalyticsApi(instance.ZUID)
   const notify = useNotify();
   const dateRange = useDateRange();
@@ -22,17 +24,23 @@ export default function PageContent({ instance }) {
   const [tableData, setTableData] = useState([])
   const [loading, setLoading] = useState(false)
 
+  useEffect(() => {
+    if(searchParams.get("q")) return setSelectedPagePath([searchParams.get("q")])
+    setSelectedPagePath([])
+  }, [searchParams])
+
   useEffect(async () => {
     if (googleDetails) {
 
       try {
         setLoading(true)
         const data = await getChartData(googleDetails.defaultProfileId, dateRange, "bar", selectedPagePath);
-        const tableData = await getContentPages(googleDetails.defaultProfileId, dateRange)
+        const tableData = await getContentPages(googleDetails.defaultProfileId, dateRange, 10, selectedPagePath)
         setChartData(data.chartJSData);
         setTableData(tableData)
         setGoogleData(data.googleData);
         setLoading(false)
+       
       } catch (error) {
         setLoading(false)
         notify.current.error(error.message);
