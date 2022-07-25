@@ -3,9 +3,12 @@ import DomainTable from "./DomainTable";
 import { Button, Modal, Box, Typography, IconButton, Card } from "@mui/material";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 
-export default function DomainPicker({ onSelect, domainList, domainSelect, buttonName = "Select Domain", variant="contained", size="" }) {
+export default function DomainPicker({ onSelect, domainList, domainSelect, buttonName = "Select Domain", variant="contained", size="", show = false }) {
   const [showModal, setShowModal] = useState(false);
 
+  useEffect(() => {
+    setShowModal(show)
+  }, [show])
 
   return (
     <>

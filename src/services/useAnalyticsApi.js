@@ -35,10 +35,11 @@ export const useAnalyticsApi = (zuid) => {
                         { name: "ga:date" },
                     ],
                     orderBys: [
-                      {
-                        fieldName: "ga:pageViews",
-                        sortOrder: "DESCENDING",
-                      },
+                        {
+                          fieldName: "ga:date",
+                          orderType: "VALUE",
+                          sortOrder: "ASCENDING",
+                        },
                     ],
                     filtersExpression : pathFilter
                   },

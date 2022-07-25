@@ -14,7 +14,7 @@ export function PageContentGraph({ selectedPath, data, isLoading = true }){
 
     useEffect(() => {
 
-      if(data && data.datasets[0].label !== "Loading") setSelectedMetricsY1("PageViews")
+      if(data && data.datasets[0].label !== "Loading" && selectedMetricsY1 === null && selectedMetricsY2 === null) setSelectedMetricsY1("PageViews")
 
     }, [data])
     
@@ -60,7 +60,7 @@ export function PageContentGraph({ selectedPath, data, isLoading = true }){
     const formatTicksY2 = (value, index, ticks) => {
       if(!selectedMetricsY2) return;
       if(selectedMetricsY2.includes("Time")) return moment().startOf('day').seconds(Number(value)).format('HH:mm:ss');
-      if(selectedMetricsY2.includes("Rate")) return value + "%";
+      if(selectedMetricsY2.includes("Rate")) return Math.round(value) + "%";
       if(selectedMetricsY2.includes("Value")) return value + "$";
 
       return value;
@@ -69,13 +69,17 @@ export function PageContentGraph({ selectedPath, data, isLoading = true }){
     const formatTicksY1 = (value, index, ticks) => {
       if(!selectedMetricsY1) return;
       if(selectedMetricsY1.includes("Time")) return moment().startOf('day').seconds(Number(value)).format('HH:mm:ss');
-      if(selectedMetricsY1.includes("Rate")) return value + "%";
+      if(selectedMetricsY1.includes("Rate")) return Math.round(value) + "%";
       if(selectedMetricsY1.includes("Value")) return value + "$";
 
       return value;
     }
 
+    const datasetTicksFormat = (dataSetIndex, value) => {
+      if(dataSetIndex === 0) return formatTicksY1(value)
 
+      return formatTicksY2(value)
+    }
 
     return (
         <>
@@ -94,6 +98,18 @@ export function PageContentGraph({ selectedPath, data, isLoading = true }){
                       responsive: true,
                       maintainAspectRatio: false,
                       bezierCurve: false,
+                      tooltips: {
+                        callbacks : {
+                          label : function (ticks){
+
+                            return datasetTicksFormat(ticks.datasetIndex, ticks.value)
+                          },
+                          title : function (values){
+                            var { label} = values[0]
+                            return moment(label).format('YYYY-MM-DD')
+                          }
+                        }
+                      },
                       scales: {
                         yAxes: [{
                             id: 'y1',                             
@@ -118,7 +134,6 @@ export function PageContentGraph({ selectedPath, data, isLoading = true }){
                           }
                         }]
                       },
-                      
                     }}
                 />
             </GraphContainer>

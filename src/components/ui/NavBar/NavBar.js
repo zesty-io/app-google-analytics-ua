@@ -12,6 +12,7 @@ export default function NavBar({ zuid, token }) {
     const [domainList, setDomainList] = useState([]);
     const { getGoogleSetting, updateSetting } = useFetchWrapper(zuid, token)
     const [googleProfile, setGoogleProfile] = useState(null)
+    const [showSelection, setShowSelection] = useState(false)
 
     useEffect(async () => {
 
@@ -32,6 +33,9 @@ export default function NavBar({ zuid, token }) {
 
         const gData = await getGoogleSetting()
         const selectedProfile = domainList.find(domain => domain.defaultProfileId === gData.gaProfile.value)
+
+        if(gData.gaProfile.value === "" && gData.urchinId.value === "") setShowSelection(true)
+
         setGoogleProfile(gData)
         setGoogleDetails(selectedProfile)
         
@@ -107,6 +111,7 @@ export default function NavBar({ zuid, token }) {
             domainList={domainList}
             onSelect={onDomainSelect}
             domainSelect={googleDetails}
+            show={showSelection}
           />
         )}
         </Box>
