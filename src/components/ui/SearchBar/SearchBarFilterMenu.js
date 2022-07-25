@@ -7,9 +7,10 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import Divider from '@mui/material/Divider'
-import { useEffect } from 'react';
 import { Typography } from '@mui/material';
+
 export default function SearchBarFilterMenu({ data, isTyping, onMenuClick}){
+
 
     return (
         <>
@@ -35,7 +36,7 @@ export default function SearchBarFilterMenu({ data, isTyping, onMenuClick}){
                         <>
                             {value.web.path && (
                                 <>
-                                <ListItemButton onClick={() => console.log("click")}>
+                                <ListItemButton onClick={() => onMenuClick(`/content?q=${value.web.path}`)}>
                                     <ListItemText primary={value.web.metaTitle} secondary={value.web.path} />
                                 </ListItemButton>
                                 <Divider />

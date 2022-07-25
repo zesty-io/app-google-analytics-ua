@@ -50,7 +50,8 @@ export const useAnalyticsApi = (zuid) => {
           })
     }
 
-    const getContentPages = (googleId, dateRange, pageSize = 10) => {
+    const getContentPages = (googleId, dateRange, pageSize = 10, filters = []) => {
+        const pathFilter = filters.map(path => 'ga:pagePath==' + path).join(",");
 
         return request(dataApiUrl, {
             method: "POST",
@@ -79,6 +80,7 @@ export const useAnalyticsApi = (zuid) => {
                         sortOrder: "DESCENDING",
                       },
                     ],
+                    filtersExpression : pathFilter,
                     pageSize: pageSize,
                   },
                 ],

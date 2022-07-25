@@ -61,28 +61,30 @@ export default function AppWrapper(props){
 
     return (
         <>
-        <NavBar zuid={props.instance.ZUID} token={props.token}/>
-        <Box sx={{
-            p : 4,
-            marginTop: 10
-        }}>
-            <GoogleAuthOverlay user={userId} instance={props.instance} isAuthenticated={isAuthenticated} />
-           <Router basename="/google-analytics">
-                <Box sx={{ display : "flex", gap : 4 }}>
-                    <Box>
-                        <Menu />
+        
+        <Router basename="/google-analytics">
+            <NavBar zuid={props.instance.ZUID} token={props.token}/>
+            <Box sx={{
+                p : 4,
+                marginTop: 10
+            }}>
+                <GoogleAuthOverlay user={userId} instance={props.instance} isAuthenticated={isAuthenticated} />
+                    <Box sx={{ display : "flex", gap : 4 }}>
+                        <Box>
+                            <Menu />
+                        </Box>
+                        <Box sx={{ flexGrow : 1 }}>
+                            <Routes>
+                                <Route path="/" element={<Overview {...props} />} />
+                                <Route path="/content" element={<PageContent {...props} />} />
+                                <Route path="/journey" element={<Journey {...props} />} />
+                            </Routes>
+                        </Box>
                     </Box>
-                    <Box sx={{ flexGrow : 1 }}>
-                        <Routes>
-                            <Route path="/" element={<Overview {...props} />} />
-                            <Route path="/content" element={<PageContent {...props} />} />
-                            <Route path="/journey" element={<Journey {...props} />} />
-                        </Routes>
-                    </Box>
-                </Box>
-            </Router>
             
-        </Box>
+                
+            </Box>
+        </Router>
         </>
     )
 }

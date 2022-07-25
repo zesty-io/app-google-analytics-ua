@@ -83,7 +83,7 @@ export default function NavBar({ zuid, token }) {
         <Box>
         { googleDetails && (
           <>
-            <Box sx={{ display : "flex" ,width: 250, }}>
+            <Box sx={{ display : "flex" , minWidth: 250, }}>
               <Typography
                 variant="h2"
                 sx={{
