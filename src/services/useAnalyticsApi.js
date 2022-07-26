@@ -104,7 +104,7 @@ export const useAnalyticsApi = (zuid) => {
         );
     };
 
-    const getUserFlowInteraction = (googleId, dataRange) => {
+    const getUserFlowInteraction = (googleId, dateRange) => {
 
       return request(dataApiUrl, {
         method: "POST",
@@ -120,7 +120,16 @@ export const useAnalyticsApi = (zuid) => {
               dimensions: [
                 {name:"ga:previousPagePath"},
                 {name:"ga:pagePath"},
-                {name:"ga:exitPagePath"}
+              ],
+              orderBys: [
+                {
+                  fieldName: "ga:previousPagePath",
+                  sortOrder: "ASCENDING",
+                },
+                {
+                  fieldName: "ga:pagePath",
+                  sortOrder: "ASCENDING",
+                },
               ]
             }
           }
