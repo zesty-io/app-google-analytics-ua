@@ -19,6 +19,7 @@ export const useAnalyticsApi = (zuid) => {
                 reportRequests: [
                   {
                     viewId: googleId,
+                    includeEmptyRows: true,
                     dateRanges: [{ startDate: dateRange.startDate, endDate: dateRange.endDate }],
                     metrics: [
                         
@@ -103,7 +104,32 @@ export const useAnalyticsApi = (zuid) => {
         );
     };
 
+    const getUserFlowInteraction = (googleId, dataRange) => {
 
-    return { getChartData, getContentPages, getGaDomain }
+      return request(dataApiUrl, {
+        method: "POST",
+        headers: {
+          "content-type": "text/plain",
+        },
+        body: JSON.stringify({
+          gaRequest : {
+            reportRequests : {
+              viewId: googleId,
+              dateRanges: [{ startDate: dateRange.startDate, endDate: dateRange.endDate }],
+              metrics:[{expression:"ga:pageViews"}],
+              dimensions: [
+                {name:"ga:previousPagePath"},
+                {name:"ga:pagePath"},
+                {name:"ga:exitPagePath"}
+              ]
+            }
+          }
+          })
+      })
+
+    }
+
+
+    return { getChartData, getContentPages, getGaDomain, getUserFlowInteraction }
 
 }
