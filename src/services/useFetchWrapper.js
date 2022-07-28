@@ -52,7 +52,6 @@ export const useFetchWrapper = (zuid, token) => {
             }
         })
         const data = await result.json()
-        console.log(data)
         return data
     }
 

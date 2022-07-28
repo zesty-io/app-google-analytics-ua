@@ -34,6 +34,9 @@ export default function SearchBar({ zuid, token }){
         
         const searchItem = event.target.value
         setSelectedData(searchItem)
+
+        if(searchItem === "") return
+
         const result = await searchItems(searchItem)
         const filteredResult = formatResult(result)
         setData(filteredResult)

@@ -16,8 +16,8 @@ export function useDateRangeUpdate(){
 export function DateRangeProvider({ children }){
 
     const [dateRange, setDateRange] = useState({
-        selectedItem : "Last 30 Days",
-        startDate : moment().subtract(30, "days").startOf("month").format("YYYY-MM-DD"),
+        selectedItem : "Last 7 Days",
+        startDate : moment().subtract(7, "days").startOf("month").format("YYYY-MM-DD"),
         endDate : moment().format("YYYY-MM-DD"),
     })
 

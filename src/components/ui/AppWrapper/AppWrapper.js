@@ -37,7 +37,7 @@ const Menu = () => (
             </MenuItem>
             <MenuItem component={Link} to="/journey">
                 <Typography  color="primary"  sx={{ fontWeight : "bold" }}>
-                    Journey
+                    User Journey
                 </Typography>
             </MenuItem>
         </MenuList>

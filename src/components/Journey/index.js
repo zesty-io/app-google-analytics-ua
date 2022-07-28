@@ -1,113 +1,206 @@
 import { Box, Typography } from "@mui/material"
 import { useGoogle } from "../../context/GoogleContext";
 import { useDateRange } from "../../context/DateRangeContext";
-import { useEffect, useState } from "react";
-import { useFetchWrapper } from "../../services/useFetchWrapper";
+import { useEffect, useState, useCallback } from "react";
 import { useAnalyticsApi } from "../../services/useAnalyticsApi";
 import GraphContainer from "../ui/GraphContainer";
 import { Chart } from "react-google-charts";
+import Slicer from "./Slicer";
+import EntranceSelector from "./EntranceSelector";
+import { useNotify } from "../../context/SnackBarContext";
 
 
 export default function Journey({instance, token}){
-
+    const notify = useNotify();
     const { googleDetails } = useGoogle()
     const dateRange = useDateRange() 
-    const [data, setData] = useState(null)
-    const { getUserFlowInteraction } = useAnalyticsApi(instance.ZUID)
+    const [data, setData] = useState([["From", "To", "Visit"], ["From", "To", 0],])
+    const { getPageJourney } = useAnalyticsApi(instance.ZUID)
+    const [isLoading, setIsLoading] = useState(false)
+    const [ slice, setSlice ] = useState(10)
+    const [ url, setUrl ] = useState(null)
+    const [ entranceUrl, setEntranceUrl ] = useState([])
 
     useEffect(async () => {
         if(googleDetails){
-            const response = await getUserFlowInteraction(googleDetails.defaultProfileId, dateRange)
-            const result = formatArray(response.googleData)
-            setData(result)
+            try{
+                setIsLoading(true)
+                const responseJourney = await getPageJourney(googleDetails.defaultProfileId, dateRange)
+                const journey = formatJourney(responseJourney.googleData)
+                const entrances = getEntranceUrl(responseJourney.googleData)
+                setData(journey)
+                setEntranceUrl(entrances)
+                setIsLoading(false)
+            }catch (error) {
+                setIsLoading(false)
+                notify.current.error(error.message);
+        
+              }
+            
         }
-    }, [dateRange, googleDetails])  
-    
-    useEffect(() => {
-        console.log(data)
-    }, [data])
+    }, [dateRange, googleDetails, slice, url])  
 
-    const getBaseUrl = (url) => {
-        return url.split("?")[0].split("#")[0]
+    const debounce = (func) => {
+        let timer;
+        return function (...args){
+            const context = this;
+            if(timer) clearTimeout(timer)
+            timer = setTimeout(() => {
+                timer = null
+                func.apply(context, args)
+            }, 500)
+        }
     }
-    
-    const testData = [
-        ["From", "To", "Weight"],
-        ["Brazil", "Portugal", 5],
-        ["Brazil", "France", 1],
-        ["Brazil", "Spain", 1],
-        ["Brazil", "England", 1],
-        ["Canada", "Portugal", 1],
-        ["Canada", "France", 5],
-        ["Canada", "England", 1],
-        ["Mexico", "Portugal", 1],
-        ["Mexico", "France", 1],
-        ["Mexico", "Spain", 5],
-        ["Mexico", "England", 1],
-        ["USA", "Portugal", 1],
-        ["USA", "France", 1],
-        ["USA", "Spain", 1],
-        ["USA", "England", 5],
-        ["Portugal", "Angola", 2],
-        ["Portugal", "Senegal", 1],
-        ["Portugal", "Morocco", 1],
-        ["Portugal", "South Africa", 3],
-        ["France", "Angola", 1],
-        ["France", "Senegal", 3],
-        ["France", "Mali", 3],
-        ["France", "Morocco", 3],
-        ["France", "South Africa", 1],
-        ["Spain", "Senegal", 1],
-        ["Spain", "Morocco", 3],
-        ["Spain", "South Africa", 1],
-        ["England", "Angola", 1],
-        ["England", "Senegal", 1],
-        ["England", "Morocco", 2],
-        ["England", "South Africa", 7],
-        ["South Africa", "China", 200],
-        ["South Africa", "India", 1],
-        ["South Africa", "Japan", 3],
-        ["Angola", "China", 5],
-        ["Angola", "India", 1],
-        ["Angola", "Japan", 3],
-        ["Senegal", "China", 5],
-        ["Senegal", "India", 1],
-        ["Senegal", "Japan", 3],
-        ["Mali", "China", 5],
-        ["Mali", "India", 1],
-        ["Mali", "Japan", 3],
-        ["Morocco", "China", 5],
-        ["Morocco", "India", 1],
-        ["Morocco", "Japan", 1000],
-      ];
-      
-    const formatArray = (array) => {
-        return array.reports[0].data.rows.map(row => {
+
+    const handleSliceChange = (event) =>{
+        setSlice(event.target.value)
+    }
+    const handleUrlChange = (value) =>{
+        if(value === null) return setUrl(null)
+        setUrl(value)
+    }
+
+    const optimizeSliceChange =  useCallback(debounce(handleSliceChange), [])
+
+    const getEntranceUrl = (data) => {
+        let raw = data.reports[0].data.rows
+        if(!raw) return []
+        var filterData = raw.filter(item => item.dimensions[0] === "(entrance)")
+        var url = filterData.map(item => {
             return {
-                entrancePage : getBaseUrl(row.dimensions[0]),
-                nextPage : getBaseUrl(row.dimensions[1]),
-                value : row.metrics[0].values[0]
+                label :  item.dimensions[1]
             }
         })
+
+        console.log(url)
+        return url
+
+
     }
 
-    const options = {
-        sankey: {
-          link: { color: { fill: "#d799ae" } },
-          node: {
-            colors: ["#a61d4c"],
-            label: { color: "#871b47" },
-          },
+    const formatJourney = (data) => {
+
+        let raw = data.reports[0].data.rows
+        let levels = {}
+        let i = 1
+        if(!raw) return [["From", "To", "Visit"], ["No Data 1", "No Data 2", 0]]
+        do{
+            if(i === 1){
+                var filterData = raw.filter(item => item.dimensions[0] === "(entrance)")
+                raw = removeArray(raw, filterData)
+                levels[`Level${i}`] = url !== null ? filterData.filter(item => item.dimensions[1] === url.label).slice(0, slice) : filterData.slice(0, slice)
+            }else{
+                let bufferData = []
+                levels[`Level${i - 1}`].forEach((data, i) => {
+                    let levelData = raw.filter(item => data.dimensions[1] === item.dimensions[0])
+                    if(levelData.length !== 0) bufferData.push(...levelData)
+                })
+                raw = removeArray(raw, bufferData)
+                levels[`Level${i}`] = bufferData.sort(compare).slice(0, slice)
+            }
+            i = i + 1
+        }
+        while(i < 20)
+
+        let sankeyData = [["From", "To", "Visit"]]
+        for (var key in levels) {
+            if (levels.hasOwnProperty(key)) {
+                levels[key].forEach(item => {
+                    if(item.dimensions[0] !== item.dimensions[1] && !ifSankeyExist(sankeyData, item)) sankeyData.push([item.dimensions[0], item.dimensions[1], Number(item.metrics[0].values[1])])
+                    
+                })
+            }
+        }
+     
+        return sankeyData
+    }
+
+    const ifSankeyExist = (base, data) => {
+        
+        let value = false
+
+        base.forEach(items => {
+            if(items[0] === data.dimensions[0] && items[1] === data.dimensions[1]){
+                value = true
+            }
+            if(items[0] === data.dimensions[1]){
+                value = true
+            } 
+            
+        })
+
+        return value
+
+    }
+
+    const compare = (a, b) => {
+        if ( a.metrics[0].values[1] > b.metrics[0].values[1]){
+            return -1;
+        }
+        if ( a.metrics[0].values[1] < b.metrics[0].values[1]){
+            return 1;
+        }
+        return 0;
+    }
+
+    const removeArray = (base, remove) => {
+        let newArray = []
+
+        base.forEach(item => {
+            if(!remove.includes(item)) newArray.push(item)
+        })
+
+        return newArray
+    }
+
+    const RightComponent = () => (
+        <Box sx={{ display : "flex", gap : 4, alignItems : "center" }}>
+            <EntranceSelector data={entranceUrl} value={url} onChange={handleUrlChange}/>
+            <Slicer value={slice} onChange={optimizeSliceChange} />
+        </Box>
+    )
+
+    var colors = [
+            '#7a56ff', 
+            '#36a2eb', 
+            '#ffce56', 
+            '#41ead4', 
+            '#ff0022', 
+            '#56ff7a', 
+            '#ff56db', 
+            '#ff7a56', 
+            '#56dbff', 
+            '#7a56ff', 
+            '#36a2eb', 
+            '#ffce56', 
+            '#41ead4', 
+            '#ff0022', 
+            '#56ff7a', 
+            '#ff56db', 
+            '#ff7a56', 
+            '#56dbff'];
+
+    var options = {
+        sankey: { 
+            node: { 
+                nodePadding: 20,
+                colors: colors
+            },
+            link: {
+                colorMode: 'gradient',
+                colors: colors
+              }
         },
     };
 
     return (
         <>
-            <GraphContainer title="Journey" subTitle={dateRange.selectedItem} >
+            <GraphContainer title="User Journey - Beta" subTitle={dateRange.selectedItem} loading={isLoading} rightMenu={<RightComponent />}>
                 <Chart 
                  chartType="Sankey"
                  width="100%"
-                 data={testData}
+                 height={800}
+                 data={data}
                  options={options} />
             </GraphContainer>
         </>
