@@ -14,12 +14,13 @@ export default function Journey({instance, token}){
     const notify = useNotify();
     const { googleDetails } = useGoogle()
     const dateRange = useDateRange() 
-    const [data, setData] = useState([["From", "To", "Visit"], ["From", "To", 0],])
+    const [data, setData] = useState(null)
     const { getPageJourney } = useAnalyticsApi(instance.ZUID)
     const [isLoading, setIsLoading] = useState(false)
     const [ slice, setSlice ] = useState(10)
     const [ url, setUrl ] = useState(null)
     const [ entranceUrl, setEntranceUrl ] = useState([])
+    const [summary, setSummary] = useState(null)
 
     useEffect(async () => {
         if(googleDetails){
@@ -72,7 +73,6 @@ export default function Journey({instance, token}){
             }
         })
 
-        console.log(url)
         return url
 
 
@@ -80,10 +80,15 @@ export default function Journey({instance, token}){
 
     const formatJourney = (data) => {
 
+        
         let raw = data.reports[0].data.rows
+        let totals = data.reports[0].data.totals[0].values[1]
         let levels = {}
         let i = 1
-        if(!raw) return [["From", "To", "Visit"], ["No Data 1", "No Data 2", 0]]
+        if(!raw){
+            setSummary(null)
+            return [["From", "To", "Visit"], ["No Data 1", "No Data 2", 0]]
+        } 
         do{
             if(i === 1){
                 var filterData = raw.filter(item => item.dimensions[0] === "(entrance)")
@@ -111,8 +116,25 @@ export default function Journey({instance, token}){
                 })
             }
         }
-     
+
+        const maxEntrance = sankeyData.filter(value => value[0] === '(entrance)').reduce((prev, current) => (prev[2] > current[2] ? prev : current), [])
+        const maxPage = sankeyData.filter(value => value[0] === maxEntrance[1]).reduce((prev, current) => (prev[2] > current[2] ? prev : current), [])
+        
+        if(maxEntrance.length !== 0 && maxPage.length !== 0){
+            setSummary({
+                entrance : maxEntrance,
+                page : maxPage,
+                aveVisit : ave(totals, maxPage.length !== 0 ? maxPage[2] : maxEntrance[2])
+            })
+    
+        }
+
         return sankeyData
+    }
+
+    const ave = (a, b) => {
+        console.log(a, b)
+        return ((b / a) * 100).toFixed(2)
     }
 
     const ifSankeyExist = (base, data) => {
@@ -196,11 +218,20 @@ export default function Journey({instance, token}){
     return (
         <>
             <GraphContainer title="User Journey - Beta" subTitle={dateRange.selectedItem} loading={isLoading} rightMenu={<RightComponent />}>
+                {summary !== null && (
+                    <Box
+                        sx={{
+                            textAlign : "right",
+                            marginBottom : "20px"
+                        }}>
+                        {`The top page "${summary.page[1]}" from the "${summary.entrance[1]}" entrance received ${summary.page[2]} visits (${summary.aveVisit}%) of traffic flow`}
+                    </Box>
+                )}
                 <Chart 
                  chartType="Sankey"
                  width="100%"
                  height={800}
-                 data={data}
+                 data={data === null ? [["From", "To", "Visit"], ["From", "To", 0],] : data}
                  options={options} />
             </GraphContainer>
         </>
