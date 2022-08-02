@@ -28,8 +28,6 @@ export default function Journey({instance, token}){
                 setIsLoading(true)
                 const responseJourney = await getPageJourney(googleDetails.defaultProfileId, dateRange)
                 const entrances = getEntranceUrl(responseJourney.googleData)
-                console.log(responseJourney)
-
                 setRawData(responseJourney)
                 setEntranceUrl(entrances)
                 setIsLoading(false)
