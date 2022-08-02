@@ -66,13 +66,13 @@ export const useAnalyticsApi = (zuid) => {
                     viewId: googleId,
                     dateRanges: [{ startDate: dateRange.startDate, endDate: dateRange.endDate }],
                     metrics: [
-                        { expression: "ga:pageValue" },
+                        { expression: "ga:pageViews" },
                         { expression: "ga:exitRate" },
                         { expression: "ga:bounceRate" },
                         { expression: "ga:entrances" },
                         { expression: "ga:avgTimeOnPage" },
                         { expression: "ga:uniquePageviews" },
-                        { expression: "ga:pageViews" },
+                        { expression: "ga:pageValue" },
                     ],
                     dimensions: [{ name: "ga:pagePath" }],
                     orderBys: [
