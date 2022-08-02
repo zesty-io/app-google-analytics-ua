@@ -16,6 +16,7 @@ export default function Slicer({ value = 10, onChange }){
                 sx={{
                     width : 200
                 }}
+                valueLabelFormat={value => `${value} Journey${value !== 1 ? 's' : ''}`}
                 onChange={event => onChange(event)}
                 color="secondary"
             />

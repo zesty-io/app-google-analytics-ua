@@ -37,6 +37,7 @@ export default function JourneyGraph({ data, filter, slice }){
                 raw = removeArray(raw, bufferData)
                 levels[`Level${i}`] = bufferData.sort(compare).slice(0, slice)
             }
+            console.log(raw)
             i = i + 1
         }
         while(i < 20)
