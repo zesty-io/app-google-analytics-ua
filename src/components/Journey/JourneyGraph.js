@@ -155,7 +155,7 @@ export default function JourneyGraph({ data, filter, slice }){
                         <Chart 
                             chartType="Sankey"  
                             width="100%"
-                            height={800}
+                            height={900}
                             data={graphData === null ? [["From", "To", "Visit"], ["From", "To", 0],] : graphData}
                             options={options} />
                         
