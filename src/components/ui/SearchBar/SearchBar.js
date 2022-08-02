@@ -14,6 +14,7 @@ export default function SearchBar({ zuid, token }){
     const [isTyping, setIsTyping] = useState(false)
     const [anchor, setAnchorEl] = useState(null);
     const [data, setData] = useState(null)
+    const [selectedData, setSelectedData] = useState("")
 
     const focus = event => {
         setAnchorEl(event.currentTarget);
@@ -30,15 +31,15 @@ export default function SearchBar({ zuid, token }){
 
     const handleChange = async (event) => {
         setIsTyping(true)
+        
         const searchItem = event.target.value
+        setSelectedData(searchItem)
 
-        if(searchItem === "") {
-            setData(null) 
-            setIsTyping(false)
-            return 
-        }
+        if(searchItem === "") return
+
         const result = await searchItems(searchItem)
-        setData(result.data)
+        const filteredResult = formatResult(result)
+        setData(filteredResult)
         setIsTyping(false)
     }
 
@@ -80,14 +81,17 @@ export default function SearchBar({ zuid, token }){
                                 autoComplete: 'off'
                             }}
                             />
-                        <Popper
-                            id={id}
-                            open={Boolean(anchor)}
-                            placement="bottom-start"
-                            anchorEl={anchor}
-                            disablePortal>
-                            <SearchBarFilterMenu data={data} isTyping={isTyping} onMenuClick={onMenuClick} />
-                        </Popper>
+                        {selectedData !== "" && (
+                            <Popper
+                                id={id}
+                                open={Boolean(anchor)}
+                                placement="bottom-start"
+                                anchorEl={anchor}
+                                disablePortal>
+                                <SearchBarFilterMenu data={data} isTyping={isTyping} onMenuClick={onMenuClick} />
+                            </Popper>
+                        )}
+                        
                     </span>
                 </ClickAwayListener>
             </Box>

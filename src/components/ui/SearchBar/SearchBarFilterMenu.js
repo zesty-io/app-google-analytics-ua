@@ -34,10 +34,10 @@ export default function SearchBarFilterMenu({ data, isTyping, onMenuClick}){
                     <List>
                     {data.map(value => (
                         <>
-                            {value.web.path && (
+                            {value.path && (
                                 <>
-                                <ListItemButton onClick={() => onMenuClick(`/content?q=${value.web.path}`)}>
-                                    <ListItemText primary={value.web.metaTitle} secondary={value.web.path} />
+                                <ListItemButton onClick={() => onMenuClick(`/content?q=${value.path}`)}>
+                                    <ListItemText primary={value.metaTitle} secondary={value.path} />
                                 </ListItemButton>
                                 <Divider />
                                 </>

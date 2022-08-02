@@ -64,7 +64,7 @@ export function CustomDatePicker(){
         if(selectedItem === "Last 7 Days"){
             dateRangeUpdate({
                 selectedItem : "Last 7 Days",
-                startDate : moment().subtract(7, "days").startOf("month").format("YYYY-MM-DD"),
+                startDate : moment().subtract(7, "days").format("YYYY-MM-DD"),
                 endDate : moment().format("YYYY-MM-DD"),
             })
         }

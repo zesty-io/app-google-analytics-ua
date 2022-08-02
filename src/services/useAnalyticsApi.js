@@ -19,6 +19,7 @@ export const useAnalyticsApi = (zuid) => {
                 reportRequests: [
                   {
                     viewId: googleId,
+                    includeEmptyRows: true,
                     dateRanges: [{ startDate: dateRange.startDate, endDate: dateRange.endDate }],
                     metrics: [
                         
@@ -103,7 +104,81 @@ export const useAnalyticsApi = (zuid) => {
         );
     };
 
+    const getUserFlowInteraction = (googleId, dateRange) => {
 
-    return { getChartData, getContentPages, getGaDomain }
+      return request(dataApiUrl, {
+        method: "POST",
+        headers: {
+          "content-type": "text/plain",
+        },
+        body: JSON.stringify({
+          gaRequest : {
+            reportRequests : {
+              viewId: googleId,
+              includeEmptyRows: true,
+              dateRanges: [{ startDate: dateRange.startDate, endDate: dateRange.endDate }],
+              metrics:[
+                {expression:"ga:pageViews"},
+              ],
+              dimensions: [
+                {name:"ga:pagePathLevel1"},
+                {name:"ga:pagePathLevel2"},
+                {name:"ga:pagePathLevel3"},
+                {name:"ga:pagePathLevel4"},
+              ],
+              orderBys: [
+                // {
+                //   fieldName: "ga:previousPagePath",
+                //   sortOrder: "ASCENDING",
+                // },
+                {
+                  fieldName: "ga:pageViews",
+                  sortOrder: "DESCENDING",
+                },
+              ]
+            }
+          }
+          })
+      })
+    }
+
+    const getPageJourney = (googleId, dateRange) => {
+      return request(dataApiUrl, {
+        method: "POST",
+        headers: {
+          "content-type": "text/plain",
+        },
+        body: JSON.stringify({
+          gaRequest : {
+            reportRequests : {
+              viewId: googleId,
+              includeEmptyRows: true,
+              dateRanges: [{ startDate: dateRange.startDate, endDate: dateRange.endDate }],
+              metrics:[
+                { expression: "ga:sessions" },
+                { expression: "ga:pageviews" },
+              ],
+              dimensions: [
+                {name:"ga:previousPagePath"},
+                {name:"ga:pagePath"},
+              ],
+              orderBys: [
+                {
+                  fieldName: "ga:previousPagePath",
+                  sortOrder: "ASCENDING",
+                },
+                {
+                  fieldName: "ga:sessions",
+                  sortOrder: "DESCENDING",
+                },
+              ]
+            }
+          }
+          })
+      })
+    }
+
+
+    return { getChartData, getContentPages, getGaDomain, getUserFlowInteraction, getPageJourney }
 
 }
